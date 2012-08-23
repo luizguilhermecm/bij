@@ -1,2 +1,8 @@
 *.zip
 .DS_Store
+*_clnt.c
+*_svc.c
+*.h
+*.o
+*.xdr
+*.~
