@@ -4,5 +4,6 @@
 *_svc.c
 *.h
 *.o
-*.xdr
-*.~
+*_xdr.c
+client
+server
