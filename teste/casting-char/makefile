@@ -1,4 +1,17 @@
+FILE = bijcast
+SERVER = server
+CLIENT = client
+FLAGS = -lnsl
+CC = cc
+RPCGEN = rpcgen
+
 default:
-	rpcgen -C bijcast.x
-	cc server.c bijcast_svc.c bijcast_xdr.c -o server
-	cc client.c bijcast_clnt.c bijcast_xdr.c -o client
+	$(RPCGEN) -C $(FILE).x
+	$(CC) $(SERVER).c $(FILE)_svc.c $(FILE)_xdr.c -o $(SERVER) 
+	$(CC) $(CLIENT).c $(FILE)_clnt.c $(FILE)_xdr.c -o $(CLIENT)
+
+clean:
+	$(RM) $(SERVER) $(CLIENT) $(FILE)_* $(FILE).h
+
+only:
+	$(RM) $(FILE)_* $(FILE).h
