@@ -1,4 +1,4 @@
-FILE = bijcast
+FILE = bijstruct
 SERVER = server
 CLIENT = client
 FLAGS = -lnsl
