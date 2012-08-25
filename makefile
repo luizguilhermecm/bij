@@ -15,3 +15,6 @@ clean:
 
 only:
 	$(RM) $(FILE)_* $(FILE).h
+
+gen:
+	gcc node_generator.c -o generator
