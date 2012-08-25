@@ -8,13 +8,13 @@ operands pass (CLIENT *clnt, operands arg)
 {
    operands ops;
    operands * result;
-
+   
    /* junta os parâmetros em um struct */
    ops.y = arg.y;
-
+   ops.parametro = (char *) malloc (50 * sizeof(char));
    int i = 0;
    for(i; i<50; i++)
-      ops.vetor[i] = arg.vetor[i];
+      ops.parametro[i] = arg.parametro[i];
 
    /* chama a função remota */
    result = pass_1 (&ops,clnt);
@@ -31,6 +31,7 @@ int main( int argc, char *argv[])
 {
    CLIENT *clnt;
    operands arg;
+   char *parametro; /* vetor de char que será passado por parametro */
 
   /* verifica se o cliente foi chamado corretamente */
    if (argc!=3)
@@ -52,15 +53,16 @@ int main( int argc, char *argv[])
    /* obtém os dois inteiros que serão passados via RPC */
    arg.y = *argv[2];
    
+   arg.parametro = (char *) malloc (50 * sizeof(char));
    int i = 0;
-   for(i; i<50; i++)
-      arg.vetor[i] = 'x';
+   for(i; i < 50; i++)
+      arg.parametro[i] = 'X';
 
    /* executa os procedimentos remotos */
    operands aux = pass (clnt, arg); 
    
    printf ("string: %c e retorno: %c\n", arg.y, aux.y );
-   printf ("Mensagem: %s e retorno: %s\n", arg.vetor, aux.vetor );
+   printf ("Mensagem: %s e retorno: %s\n", aux.parametro, aux.parametro );
 
    return (0);
 } 

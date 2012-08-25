@@ -1,3 +1,9 @@
+/*
+**   Autores:
+**      Breno Naodi Kusunoki
+**      Luiz Guilherme Castilho Martins
+*/
+
 #include <string.h>
 #include <stdio.h>
 #include "bij.h"

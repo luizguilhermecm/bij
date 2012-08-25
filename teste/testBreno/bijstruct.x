@@ -11,7 +11,7 @@
 struct operands
 {
         char y;
-        char vetor[50];
+        char *parametro;  /* Ponteiro para o vetor que será criado dinamicamente */
 };
 
 /* Definição da interface que será oferecida aos clientes */

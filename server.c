@@ -1,3 +1,9 @@
+/*
+**   Autores:
+**      Breno Naodi Kusunoki
+**      Luiz Guilherme Castilho Martins
+*/
+
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
@@ -8,7 +14,7 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
 {
         static Node _package;
 
-        /* the magic works happens here */
+        /* The magic works happens here */
 
         return (&_package);
 }
