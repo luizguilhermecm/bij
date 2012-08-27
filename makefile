@@ -18,3 +18,6 @@ only:
 
 gen:
 	gcc node_generator.c -o generator
+
+file:
+	gcc rwfile.c -o arquivo

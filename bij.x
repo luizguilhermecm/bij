@@ -12,7 +12,7 @@ struct Adjacent
         int weight;
         int region;
         int last_update;
-        bool time_out;
+        int time_out;
 };
 
 struct Node
