@@ -17,6 +17,7 @@ struct Adjacent
 
 struct Node
 {
+        char node_file[16];
         char node_id;
         char node_ip[15];
         int node_region;

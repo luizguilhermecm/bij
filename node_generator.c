@@ -17,7 +17,7 @@
 */
 typedef struct Adjacent 
 {
-        char destiny[25];  /* IP do Destinatário Exemplo: 192.90.30.211                                         */
+        char destiny[15];  /* IP do Destinatário Exemplo: 192.90.30.211                                         */
         char destiny_id;   /* ID do Destinatário Exemplo: y #TODO: if destiny_id was a region it needs be fixed.*/
         char route_ip[15]; /* IP do Adjacente    Exemplo: 192.90.30.221                                         */
         char route_id;     /* ID do Adjacente    Exemplo: x                                                     */
@@ -34,7 +34,7 @@ typedef struct Adjacent
 */
 typedef struct Node
 {
-        char   node_file[26];         /* Conterá o nome do arquivo Ex.: a192.90.30.211                     */
+        char   node_file[16];         /* Conterá o nome do arquivo Ex.: a192.90.30.211                     */
         char   node_id;            /* Conterá o ID Ex.: b                                               */
         char   node_ip[15];           /* Conterá o IP do Nó Ex.: 192.90.30.211                             */
         int    node_region;           /* Terá a região do no a qual ele pertence                           */
@@ -56,7 +56,7 @@ void Generator (Node _node)
                                          Se já existir, o conteúdo anterior será destruído. */
 
         /* Escreve as informações do nó. Nome do arquivo, id, IP e a região a qual ele pertence */
-        fwrite(_node.node_file,   sizeof(char), 26, file);
+        fwrite(_node.node_file,   sizeof(char), 16, file);
         fwrite(&_node.node_id,     sizeof(char),  1, file);
         fwrite(_node.node_ip,     sizeof(char), 15, file);
         fwrite(&_node.node_region, sizeof(int),   1, file);
@@ -85,7 +85,7 @@ void Generator (Node _node)
                 _node._table[i].last_update = 0;
                 _node._table[i].time_out = 0;
 
-                fwrite(_node._table[i].destiny,     sizeof(char), 25, file);
+                fwrite(_node._table[i].destiny,     sizeof(char), 15, file);
                 fwrite(&_node._table[i].destiny_id,  sizeof(char),  1, file);
                 fwrite(_node._table[i].route_ip,    sizeof(char), 15, file);
                 fwrite(&_node._table[i].route_id,    sizeof(char),  1, file);
@@ -114,7 +114,7 @@ void Generator (Node _node)
                 _node._table[i].last_update = 0;
                 _node._table[i].time_out = 0;
 
-                fwrite(_node._table[i].destiny,     sizeof(char), 25, file);
+                fwrite(_node._table[i].destiny,     sizeof(char), 15, file);
                 fwrite(&_node._table[i].destiny_id,  sizeof(char),  1, file);
                 fwrite(_node._table[i].route_ip,    sizeof(char), 15, file);
                 fwrite(&_node._table[i].route_id,    sizeof(char),  1, file);
@@ -138,7 +138,7 @@ void View (Node _node)
 
         FILE *file = fopen(_node.node_file, "r");
         
-        fread(_node.node_file,   sizeof(char), 26, file);
+        fread(_node.node_file,   sizeof(char), 16, file);
         fread(&_node.node_id,     sizeof(char),  1, file);
         fread(_node.node_ip,     sizeof(char), 15, file);
         fread(&_node.node_region, sizeof(int),   1, file);
@@ -147,7 +147,7 @@ void View (Node _node)
 
         while (i < MAX){
 
-                fread(_node._table[i].destiny,     sizeof(char), 25, file);
+                fread(_node._table[i].destiny,     sizeof(char), 15, file);
                 fread(&_node._table[i].destiny_id,  sizeof(char),  1, file);
                 fread(_node._table[i].route_ip,    sizeof(char), 15, file);
                 fread(&_node._table[i].route_id,    sizeof(char),  1, file);
@@ -168,13 +168,12 @@ void View (Node _node)
 
 int main(int argc, char *argv[])
 {       
-        FILE *file;    /* Ponteiro para manipulação do Arquivo */
         Node _node;    /* Estrutura contendo as informações do Nó ( Computador ) */
 
         _node.node_id = *argv[1];            /* Copia o argv[1]  para o node_id   Ex.: a                */
         strcpy(_node.node_ip, argv[2]);            /* Copia o argv[1]  para o node_ip   Ex.: 192.168.110.220  */
 
-        strcat(_node.node_file, argv[1]);    /* Copia o node_id  para o node_file Ex.: a                */
+        strcpy(_node.node_file, argv[1]);    /* Copia o node_id  para o node_file Ex.: a                */
         strcat(_node.node_file, argv[2]);    /* Copia o node_ip  para o node_file Ex.: a192.168.110.220 */
 
         /* O node_file será o nome do arquivo que terá as informações dos adjacentes e também o ID do nó      */
