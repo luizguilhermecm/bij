@@ -136,5 +136,3 @@ void Write (char file_name[], Node _node)
         }
         fclose(file);
 }
-
-
