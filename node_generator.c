@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio_ext.h>
 
 
 #define MAX 50
@@ -63,24 +64,28 @@ void Generator (Node _node)
         
         while (check != 0) {                                   /* While para o usuário entrar com os dados dos seus Adjacentes */
                 printf("\ndestiny: ");
-                scanf ("%s", _node._table[i].destiny);
+                __fpurge(stdin);
+                scanf (" %s", _node._table[i].destiny);
 
                 printf("\ndestiny_id: ");
-                rewind(stdin);
+                __fpurge(stdin);
                 _node._table[i].destiny_id = getchar();
 
                 printf("\nroute_ip: ");
-                scanf("%s", _node._table[i].route_ip);
+                __fpurge(stdin);
+                scanf(" %s", _node._table[i].route_ip);
 
                 printf("\nroute_ID: ");
-                rewind(stdin);
+                __fpurge(stdin);
                 _node._table[i].route_id= getchar();
 
                 printf("\nweight: ");
-                scanf("%d", &_node._table[i].weight);
+                __fpurge(stdin);
+                scanf(" %d", &_node._table[i].weight);
 
                 printf("\nregion: ");
-                scanf("%d", &_node._table[i].region);
+                __fpurge(stdin);
+                scanf(" %d", &_node._table[i].region);
 
                 _node._table[i].last_update = 0;
                 _node._table[i].time_out = 0;
