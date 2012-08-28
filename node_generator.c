@@ -194,21 +194,10 @@ void View (Node _node)
                 printf("\n");
                 i++;
         }
-                printf("+----------------+---+----------------+---+---+---+----+----+");
-                printf("\n");
-/*
-                printf("\ndestiny: %s",    _node._table[i].destiny);
-                printf("\ndestiny_id: %c", _node._table[i].destiny_id); 
-                printf("\nroute_ip: %s",   _node._table[i].route_ip);
-                printf("\nroute_id: %c",   _node._table[i].route_id);
-                
-                printf("\nweight: %d\n",    _node._table[i].weight);
-                printf("\nregion: %d",      _node._table[i].region);
-                printf("\nlast_update: %d", _node._table[i].last_update);
-                printf("\ntime_out: %d",    _node._table[i].time_out);
-*/ 
-        fclose(file);
+        printf("+----------------+---+----------------+---+---+---+----+----+");
+        printf("\n");
 
+        fclose(file);
 }
 
 int main(int argc, char *argv[])

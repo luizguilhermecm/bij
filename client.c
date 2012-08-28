@@ -116,40 +116,50 @@ Node Read (char file_name[], Node _node){
         fread( _node.node_ip,        sizeof(char), 15, file);
         fread(&_node.node_region,    sizeof(int),   1, file);
         fread( _node.send_file_name, sizeof(char), 16, file);
-
-        printf("file: %s\nid: %c\nip: %s\nregion: %d\nsend_file_name: %s\n\n", _node.node_file, _node.node_id, _node.node_ip, _node.node_region, _node.send_file_name);
+        
+        printf("+-----------------------------------------------------------+");
+        printf("\n");
+        printf("|ID:%3c|IP:%16s|Regiao:%3d|File:%16s|", _node.node_id, _node.node_ip, _node.node_region, _node.node_file);
+        printf("\n");
+        printf("+-----------------------------------------------------------+");
+        printf("\n");
+        printf("+----------------+---+----------------+---+---+---+----+----+");
+        printf("\n");
+        printf("|IP Destino      |IDD| IP da Rota     |IDR|Pes|Reg|Last|Out |");
+        printf("\n");
+        printf("+----------------+---+----------------+---+---+---+----+----+");
+        printf("\n");
 
         while (i < MAX){
 
-                fread( _node._table[i].destiny,      sizeof(char), 15, file);
-                fread(&_node._table[i].destiny_id,   sizeof(char),  1, file);
-                fread( _node._table[i].route_ip,     sizeof(char), 15, file);
-                fread(&_node._table[i].route_id,     sizeof(char),  1, file);
-                fread(&_node._table[i].weight,       sizeof(int),   1, file);
-                fread(&_node._table[i].region,       sizeof(int),   1, file);
-                fread(&_node._table[i].last_update,  sizeof(int),   1, file);
-                fread(&_node._table[i].time_out,     sizeof(int),   1, file);
+                fread( _node._table[i].destiny,     sizeof(char), 15, file);
+                fread(&_node._table[i].destiny_id,  sizeof(char),  1, file);
+                fread( _node._table[i].route_ip,    sizeof(char), 15, file);
+                fread(&_node._table[i].route_id,    sizeof(char),  1, file);
+                fread(&_node._table[i].weight,      sizeof(int),   1, file);
+                fread(&_node._table[i].region,      sizeof(int),   1, file);
+                fread(&_node._table[i].last_update, sizeof(int),   1, file);
+                fread(&_node._table[i].time_out,    sizeof(int),   1, file);
 
-                if(_node._table[i-1].destiny_id != '0'){
-                        //printf("\n\ndestiny: %s\ndestiny_id: %c\nroute_ip: %s\nroute_id: %c", _node._table[i].destiny, _node._table[i].destiny_id, _node._table[i].route_ip, _node._table[i].route_id);
-                        //printf("\nweight: %d\nregion: %d\nlast_update: %d\ntime_out: %d\n", _node._table[i].weight, _node._table[i].region, _node._table[i].last_update, _node._table[i].time_out);
-                        printf("\n");
-                        printf("\ndestiny: %s",    _node._table[i].destiny);
-                        printf("\ndestiny_id: %c", _node._table[i].destiny_id); 
-                        printf("\nroute_ip: %s",   _node._table[i].route_ip);
-                        printf("\nroute_id: %c",   _node._table[i].route_id);
-                        
-                        printf("\nweight: %d\n",    _node._table[i].weight);
-                        printf("\nregion: %d",      _node._table[i].region);
-                        printf("\nlast_update: %d", _node._table[i].last_update);
-                        printf("\ntime_out: %d",    _node._table[i].time_out);
-                }
+                printf("+----------------+---+----------------+---+---+---+----+----+");
+                printf("\n");
+                printf("|%16s", _node._table[i].destiny);
+                printf("|%3c", _node._table[i].destiny_id); 
+                printf("|%16s", _node._table[i].route_ip);
+                printf("|%3c", _node._table[i].route_id);
+                
+                printf("|%3d",    _node._table[i].weight);
+                printf("|%3d",      _node._table[i].region);
+                printf("|%4d", _node._table[i].last_update);
+                printf("|%4d|",    _node._table[i].time_out);
+                printf("\n");
                 i++;
         }
+        printf("+----------------+---+----------------+---+---+---+----+----+");
+        printf("\n");
 
         fclose(file);
         return _node;
-
 }
 
 
