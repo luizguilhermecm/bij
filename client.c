@@ -10,7 +10,7 @@
 
 #define MAX 50
 
-Node Read      (char file_name[], Node _node);
+Node Read      (char file_name[]);
 void Write     (char file_name[], Node _node);
 void SendTable (Node _node);
 
@@ -24,7 +24,7 @@ void SendTable (Node _node);
 void Router(CLIENT *clnt, Node _arg)
 {
         Node _package;     /* Objeto do tipo Node que será enviado como parâmetro no router_l ( Método remoto ) */
-        Node * _result;    /* ??????????????????????????????? */
+        Node * _result;    /* Receive the return of server */
         
         _package = _arg;   /* Copia o argumento para a variável _package que será passada para a função remota */
         
@@ -39,38 +39,29 @@ void Router(CLIENT *clnt, Node _arg)
 int main( int argc, char *argv[])
 {
         CLIENT *clnt;
-        CLIENT *_send_to; /* Será responsável pela comunicação com os outros servidores     */
+        CLIENT * _adjacent; // will be used to send table for adjacents
         Node _arg;        /* Armazenará o conteúdo do arquivo do servidor local             */
         
-        Node _result; /* @@@ @@@ @@@ ?????????????????????????????????????????? @@@ @@@ @@@ */
-
-        char file_name [16];          /* Nome do arquivo LOCAL                              */
         char send_file_name[16];      /* Nome do arquivo que será aberto no SERVIDOR REMOTO */
-
-        strcpy (file_name, argv[2]);  /* Parâmetro ID Exemplo: a                            */
-        strcat (file_name, argv[1]);  /* Parâmetro IP Exemplo: 192.168.189.210              */
+        char file_name [16];          /* Nome do arquivo LOCAL                              */
+        strcpy (file_name, argv[1]);  /* Parâmetro ID Exemplo: a                            */
+        strcat (file_name, argv[2]);  /* Parâmetro IP Exemplo: 192.168.189.210              */
         
-        _arg = Read(file_name, _arg); /* Lê o arquivo LOCAL                                 */
-        
+        _arg = Read(file_name); /* Lê o arquivo LOCAL                                 */
+        int i = 0;
+        while (_arg._table[i].destiny_id != '0'){   //FIX: if destiny_id was a region
 
+                _arg.send_file_name[0] = _arg._table[i].destiny_id; /* Muda somente o ID do nome, não efetua mudanças no IP */
+
+                _adjacent = clnt_create (_arg._table[i].destiny, BIJ_PROG, BIJ_VERSION, "udp"); // the first parameter is the IP of destiny
+
+                Router (_adjacent, _arg); /* Envia a tabela para o adjacente conforme a variável i */
+                i++;
+        }
+//        _arg = Read(file_name, _arg); // Read my file;
 
         /* cria uma KEEPING CLIENT que referencia uma interface RPC */
         clnt = clnt_create (argv[1], BIJ_PROG, BIJ_VERSION, "udp");
-        int i = 0;
-        while (_arg._table[i].last_update == 0){
-                CLIENT * send;
-
-                send = clnt_create (argv[1], BIJ_PROG, BIJ_VERSION, "udp");
-
-                _arg.send_file_name[0] = _arg._table[i].destiny_id; /* Muda somente o ID do nome, não efetua mudanças no IP */
-                
-                i++;
-
-                Router (clnt, _arg); /* Envia a tabela para o adjacente conforme a variável i */
-        }
-
-
-//        _arg = Read(file_name, _arg); // Read my file;
         /* verifica se a referência foi criada */
         if (clnt == (CLIENT *) NULL)
         {
@@ -104,11 +95,11 @@ void SendTable (Node _node){
 **  Descrição: Recebe como parâmetro o nome do arquivo que deverá ser lido ( Arquivo LOCAL )
 **             E o Nó que armazenará as informações lidas pela função e depois será retornado.     
 */
-Node Read (char file_name[], Node _node){
+Node Read (char file_name[]){
 
+        Node _node;
         int i = 0;
 
-        printf("####### ARQUIVO #######");
         FILE *file = fopen(file_name, "r");
         
         fread( _node.node_file,      sizeof(char), 16, file);
@@ -156,7 +147,7 @@ Node Read (char file_name[], Node _node){
                 i++;
         }
         printf("+----------------+---+----------------+---+---+---+----+----+");
-        printf("\n");
+        printf("\n\n\n");
 
         fclose(file);
         return _node;
