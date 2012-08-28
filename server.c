@@ -11,6 +11,7 @@
 
 #define MAX 50
 
+/* Funções Globais */
 int hasId (char id, Node _main);
 Node Read (char file_name[], Node _node);
 void Write (char file_name[], Node _node);
@@ -18,13 +19,22 @@ void Write (char file_name[], Node _node);
 /* implementação da função add */
 Node * router_1_svc (Node * argp, struct svc_req *rqstp)
 {
-        static Node _package;
-        _package = *argp;
-
-
-        Node _aux = Read(_package.send_file_name, _aux);
         int i = 0;
-        while (_package._table[i].last_update == 0){
+
+        static Node _package;
+        _package = *argp;     /* _package recebe o conteúdo do ponteiro passado por parâmetro
+                                  contendo o arquivo que deverá ser comparado com o arquivo LOCAL
+                                  e o mesmo deverá ser atualizado caso algum nó adjacente for desconectado
+                                  ou uma nova rota for descoberta ou uma rota de menor custo for encontrada. */
+
+
+        Node _aux = Read(_package.send_file_name, _aux); /* Instancia um novo Node chamado _aux e passa por parâmetro
+                                                            o nome do arquivo LOCAL ( send_file_name ) que foi enviado
+                                                            pelo CLIENT e o _aux para receber o objeto do tipo Node
+                                                            contendo informações do arquivo LOCAL                      */
+        
+
+        while (_package._table[i].last_update == 0){                 /* BETA >> */
                 if(hasId(_aux._table[i].destiny_id, _aux) == 0){
                         _aux._table[i] = _package._table[i]; 
                 }
@@ -40,8 +50,17 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
         return (&_package);
 }
 
+
+/*
+**  Função: hasId
+**  Descrição: Recebe como parâmetro o id procurado na tabela de Adjacências LOCAL
+**             se ele for encontrado retorna 1, caso ele não esteja na tabela LOCAL
+**             retornará 0.
+*/
 int hasId (char id, Node _main){
+        
         int i = 0;
+        
         while (_main._table[i].last_update == 0){
                 if (_main._table[i].destiny_id == id) return 1;
                 i++;
@@ -50,7 +69,11 @@ int hasId (char id, Node _main){
 }
 
 
-
+/*
+**  Função: Read
+**  Descrição: Recebe como parâmetro o nome do arquivo que deverá ser lido ( Arquivo LOCAL )
+**             E o Nó que armazenará as informações lidas pela função e depois será retornado.     
+*/
 Node Read (char file_name[], Node _node){
 
         int i = 0;
@@ -96,6 +119,12 @@ Node Read (char file_name[], Node _node){
 
 }
 
+
+/*
+**  Função: Write
+**  Descrição: Recebe como parâmetro o nome do arquivo que deverá ser criado ou escrito
+**             E o Nó que armazena as informações que serão gravadas pela função.
+*/
 void Write (char file_name[], Node _node)
 {
         int i = 0;                    /* Variável de controle p/ o n. de entradas não exceder o tamanho Máximo da _table[MAX] */
@@ -106,10 +135,10 @@ void Write (char file_name[], Node _node)
                                                      Se já existir, o conteúdo anterior será destruído. */
 
         /* Escreve as informações do nó. Nome do arquivo, id, IP e a região a qual ele pertence */
-        fwrite(_node.node_file,    sizeof(char), 16, file);
-        fwrite(&_node.node_id,     sizeof(char),  1, file);
-        fwrite(_node.node_ip,      sizeof(char), 15, file);
-        fwrite(&_node.node_region, sizeof(int),   1, file);
+        fwrite( _node.node_file,    sizeof(char), 16, file);
+        fwrite(&_node.node_id,      sizeof(char),  1, file);
+        fwrite( _node.node_ip,      sizeof(char), 15, file);
+        fwrite(&_node.node_region,  sizeof(int),   1, file);
 
         while (i < MAX){
                 fwrite(_node._table[i].destiny,      sizeof(char), 15, file);

@@ -14,6 +14,13 @@ Node Read      (char file_name[], Node _node);
 void Write     (char file_name[], Node _node);
 void SendTable (Node _node);
 
+
+/*
+**  Função: Router
+**  Descrição: Recebe como parâmetro o ponteiro do CLIENT
+**             E o Node com as informações que serão 
+**             enviadas para o servidor REMOTO
+*/
 void Router(CLIENT *clnt, Node _arg)
 {
         Node _package;     /* Objeto do tipo Node que será enviado como parâmetro no router_l ( Método remoto ) */
@@ -52,7 +59,7 @@ int main( int argc, char *argv[])
         int i = 0;
         while (_arg._table[i].last_update == 0){
                 CLIENT * send;
-                
+
                 send = clnt_create (argv[1], BIJ_PROG, BIJ_VERSION, "udp");
 
                 _arg.send_file_name[0] = _arg._table[i].destiny_id; /* Muda somente o ID do nome, não efetua mudanças no IP */
@@ -83,9 +90,20 @@ int main( int argc, char *argv[])
         return 0;
 } 
 
+
+/*
+**  Função: SendTable
+**  Descrição: BULHUFAS
+*/
 void SendTable (Node _node){
 }
 
+
+/*
+**  Função: Read
+**  Descrição: Recebe como parâmetro o nome do arquivo que deverá ser lido ( Arquivo LOCAL )
+**             E o Nó que armazenará as informações lidas pela função e depois será retornado.     
+*/
 Node Read (char file_name[], Node _node){
 
         int i = 0;
@@ -93,24 +111,24 @@ Node Read (char file_name[], Node _node){
         printf("####### ARQUIVO #######");
         FILE *file = fopen(file_name, "r");
         
-        fread(_node.node_file,      sizeof(char), 16, file);
-        fread(&_node.node_id,       sizeof(char),  1, file);
-        fread(_node.node_ip,        sizeof(char), 15, file);
-        fread(&_node.node_region,   sizeof(int),   1, file);
-        fread(_node.send_file_name, sizeof(char), 16, file);
+        fread( _node.node_file,      sizeof(char), 16, file);
+        fread(&_node.node_id,        sizeof(char),  1, file);
+        fread( _node.node_ip,        sizeof(char), 15, file);
+        fread(&_node.node_region,    sizeof(int),   1, file);
+        fread( _node.send_file_name, sizeof(char), 16, file);
 
         printf("file: %s\nid: %c\nip: %s\nregion: %d\nsend_file_name: %s\n\n", _node.node_file, _node.node_id, _node.node_ip, _node.node_region, _node.send_file_name);
 
         while (i < MAX){
 
-                fread(_node._table[i].destiny,      sizeof(char), 15, file);
-                fread(&_node._table[i].destiny_id,  sizeof(char),  1, file);
-                fread(_node._table[i].route_ip,     sizeof(char), 15, file);
-                fread(&_node._table[i].route_id,    sizeof(char),  1, file);
-                fread(&_node._table[i].weight,      sizeof(int),   1, file);
-                fread(&_node._table[i].region,      sizeof(int),   1, file);
-                fread(&_node._table[i].last_update, sizeof(int),   1, file);
-                fread(&_node._table[i].time_out,    sizeof(int),   1, file);
+                fread( _node._table[i].destiny,      sizeof(char), 15, file);
+                fread(&_node._table[i].destiny_id,   sizeof(char),  1, file);
+                fread( _node._table[i].route_ip,     sizeof(char), 15, file);
+                fread(&_node._table[i].route_id,     sizeof(char),  1, file);
+                fread(&_node._table[i].weight,       sizeof(int),   1, file);
+                fread(&_node._table[i].region,       sizeof(int),   1, file);
+                fread(&_node._table[i].last_update,  sizeof(int),   1, file);
+                fread(&_node._table[i].time_out,     sizeof(int),   1, file);
 
                 if(_node._table[i-1].destiny_id != '0'){
                         //printf("\n\ndestiny: %s\ndestiny_id: %c\nroute_ip: %s\nroute_id: %c", _node._table[i].destiny, _node._table[i].destiny_id, _node._table[i].route_ip, _node._table[i].route_id);
@@ -134,6 +152,12 @@ Node Read (char file_name[], Node _node){
 
 }
 
+
+/*
+**  Função: Write
+**  Descrição: Recebe como parâmetro o nome do arquivo que deverá ser criado ou escrito
+**             E o Nó que armazena as informações que serão gravadas pela função.
+*/
 void Write (char file_name[], Node _node)
 {
         int i = 0;                    /* Variável de controle p/ o n. de entradas não exceder o tamanho Máximo da _table[MAX] */
@@ -144,16 +168,16 @@ void Write (char file_name[], Node _node)
                                          Se já existir, o conteúdo anterior será destruído. */
 
         /* Escreve as informações do nó. Nome do arquivo, id, IP e a região a qual ele pertence */
-        fwrite(_node.node_file,      sizeof(char), 16, file);
-        fwrite(&_node.node_id,       sizeof(char),  1, file);
-        fwrite(_node.node_ip,        sizeof(char), 15, file);
-        fwrite(&_node.node_region,   sizeof(int),   1, file);
-        fwrite(_node.send_file_name, sizeof(char), 16, file);
+        fwrite( _node.node_file,      sizeof(char), 16, file);
+        fwrite(&_node.node_id,        sizeof(char),  1, file);
+        fwrite( _node.node_ip,        sizeof(char), 15, file);
+        fwrite(&_node.node_region,    sizeof(int),   1, file);
+        fwrite( _node.send_file_name, sizeof(char), 16, file);
 
         while (i < MAX){
-                fwrite(_node._table[i].destiny,      sizeof(char), 15, file);
+                fwrite( _node._table[i].destiny,     sizeof(char), 15, file);
                 fwrite(&_node._table[i].destiny_id,  sizeof(char),  1, file);
-                fwrite(_node._table[i].route_ip,     sizeof(char), 15, file);
+                fwrite( _node._table[i].route_ip,    sizeof(char), 15, file);
                 fwrite(&_node._table[i].route_id,    sizeof(char),  1, file);
                 fwrite(&_node._table[i].weight,      sizeof(int),   1, file);
                 fwrite(&_node._table[i].region,      sizeof(int),   1, file);
