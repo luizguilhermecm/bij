@@ -10,8 +10,8 @@
 
 #define MAX 50
 
-Node Read (char file_name[], Node _node);
-void Write (char file_name[], Node _node);
+Node Read      (char file_name[], Node _node);
+void Write     (char file_name[], Node _node);
 void SendTable (Node _node);
 
 void Router(CLIENT *clnt, Node _arg)
@@ -91,19 +91,19 @@ Node Read (char file_name[], Node _node){
         printf("####### ARQUIVO #######");
         FILE *file = fopen(file_name, "r");
         
-        fread(_node.node_file,   sizeof(char), 16, file);
-        fread(&_node.node_id,     sizeof(char),  1, file);
-        fread(_node.node_ip,     sizeof(char), 15, file);
-        fread(&_node.node_region, sizeof(int),   1, file);
-        fread(_node.send_file_name,   sizeof(char), 16, file);
+        fread(_node.node_file,      sizeof(char), 16, file);
+        fread(&_node.node_id,       sizeof(char),  1, file);
+        fread(_node.node_ip,        sizeof(char), 15, file);
+        fread(&_node.node_region,   sizeof(int),   1, file);
+        fread(_node.send_file_name, sizeof(char), 16, file);
 
         printf("file: %s\nid: %c\nip: %s\nregion: %d\nsend_file_name: %s\n\n", _node.node_file, _node.node_id, _node.node_ip, _node.node_region, _node.send_file_name);
 
         while (i < MAX){
 
-                fread(_node._table[i].destiny,     sizeof(char), 15, file);
+                fread(_node._table[i].destiny,      sizeof(char), 15, file);
                 fread(&_node._table[i].destiny_id,  sizeof(char),  1, file);
-                fread(_node._table[i].route_ip,    sizeof(char), 15, file);
+                fread(_node._table[i].route_ip,     sizeof(char), 15, file);
                 fread(&_node._table[i].route_id,    sizeof(char),  1, file);
                 fread(&_node._table[i].weight,      sizeof(int),   1, file);
                 fread(&_node._table[i].region,      sizeof(int),   1, file);
@@ -111,8 +111,18 @@ Node Read (char file_name[], Node _node){
                 fread(&_node._table[i].time_out,    sizeof(int),   1, file);
 
                 if(_node._table[i-1].destiny_id != '0'){
-                        printf("\n\ndestiny: %s\ndestiny_id: %c\nroute_ip: %s\nroute_id: %c", _node._table[i].destiny, _node._table[i].destiny_id, _node._table[i].route_ip, _node._table[i].route_id);
-                        printf("\nweight: %d\nregion: %d\nlast_update: %d\ntime_out: %d\n", _node._table[i].weight, _node._table[i].region, _node._table[i].last_update, _node._table[i].time_out);
+                        //printf("\n\ndestiny: %s\ndestiny_id: %c\nroute_ip: %s\nroute_id: %c", _node._table[i].destiny, _node._table[i].destiny_id, _node._table[i].route_ip, _node._table[i].route_id);
+                        //printf("\nweight: %d\nregion: %d\nlast_update: %d\ntime_out: %d\n", _node._table[i].weight, _node._table[i].region, _node._table[i].last_update, _node._table[i].time_out);
+                        printf("\n");
+                        printf("\ndestiny: %s",    _node._table[i].destiny);
+                        printf("\ndestiny_id: %c", _node._table[i].destiny_id); 
+                        printf("\nroute_ip: %s",   _node._table[i].route_ip);
+                        printf("\nroute_id: %c",   _node._table[i].route_id);
+                        
+                        printf("\nweight: %d\n",    _node._table[i].weight);
+                        printf("\nregion: %d",      _node._table[i].region);
+                        printf("\nlast_update: %d", _node._table[i].last_update);
+                        printf("\ntime_out: %d",    _node._table[i].time_out);
                 }
                 i++;
         }
@@ -132,16 +142,16 @@ void Write (char file_name[], Node _node)
                                          Se já existir, o conteúdo anterior será destruído. */
 
         /* Escreve as informações do nó. Nome do arquivo, id, IP e a região a qual ele pertence */
-        fwrite(_node.node_file,   sizeof(char), 16, file);
-        fwrite(&_node.node_id,     sizeof(char),  1, file);
-        fwrite(_node.node_ip,     sizeof(char), 15, file);
-        fwrite(&_node.node_region, sizeof(int),   1, file);
-        fwrite(_node.send_file_name,   sizeof(char), 16, file);
+        fwrite(_node.node_file,      sizeof(char), 16, file);
+        fwrite(&_node.node_id,       sizeof(char),  1, file);
+        fwrite(_node.node_ip,        sizeof(char), 15, file);
+        fwrite(&_node.node_region,   sizeof(int),   1, file);
+        fwrite(_node.send_file_name, sizeof(char), 16, file);
 
         while (i < MAX){
-                fwrite(_node._table[i].destiny,     sizeof(char), 15, file);
+                fwrite(_node._table[i].destiny,      sizeof(char), 15, file);
                 fwrite(&_node._table[i].destiny_id,  sizeof(char),  1, file);
-                fwrite(_node._table[i].route_ip,    sizeof(char), 15, file);
+                fwrite(_node._table[i].route_ip,     sizeof(char), 15, file);
                 fwrite(&_node._table[i].route_id,    sizeof(char),  1, file);
                 fwrite(&_node._table[i].weight,      sizeof(int),   1, file);
                 fwrite(&_node._table[i].region,      sizeof(int),   1, file);
