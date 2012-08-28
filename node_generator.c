@@ -152,7 +152,7 @@ void View (Node _node)
         
         printf("+-----------------------------------------------------------+");
         printf("\n");
-        printf("|File:%16s|ID:%3d|IP:%16s|Regiao:%3d|", _node.node_file, _node.node_id, _node.node_ip, _node.node_region);
+        printf("|ID:%3c|IP:%16s|Regiao:%3d|File:%16s|", _node.node_id, _node.node_ip, _node.node_region, _node.node_file);
         printf("\n");
         printf("+-----------------------------------------------------------+");
         printf("\n");
@@ -209,6 +209,7 @@ int main(int argc, char *argv[])
 {       
         Node _node;    /* Estrutura contendo as informações do Nó ( Computador ) */
 
+        if (argc == 3){
         _node.node_id = *argv[1];            /* Copia o argv[1]  para o node_id   Ex.: a                */
         strcpy(_node.node_ip, argv[2]);      /* Copia o argv[1]  para o node_ip   Ex.: 192.168.110.220  */
 
@@ -226,4 +227,15 @@ int main(int argc, char *argv[])
 
         Generator(_node);    /* Cria o Arquivo de configuração com o node gravado nele */
         View(_node);         /* Visualiza o Arquivo para verificar se os dados foram inseridos corretamente */
+
+        return 1;
+        }
+        else if (argc == 2){
+                strcpy(_node.node_file, argv[1]);
+                View (_node);
+
+                return 1;
+        }
+        return 0;
+
 }
