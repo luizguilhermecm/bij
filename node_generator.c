@@ -57,11 +57,11 @@ void Generator (Node _node)
                                          Se já existir, o conteúdo anterior será destruído. */
 
         /* Escreve as informações do nó. Nome do arquivo, id, IP e a região a qual ele pertence */
-        fwrite(_node.node_file,   sizeof(char), 16, file);
-        fwrite(&_node.node_id,     sizeof(char),  1, file);
-        fwrite(_node.node_ip,     sizeof(char), 15, file);
-        fwrite(&_node.node_region, sizeof(int),   1, file);
-        fwrite(_node.send_file_name,   sizeof(char), 16, file);
+        fwrite(_node.node_file,      sizeof(char), 16, file);
+        fwrite(&_node.node_id,       sizeof(char),  1, file);
+        fwrite(_node.node_ip,        sizeof(char), 15, file);
+        fwrite(&_node.node_region,   sizeof(int),   1, file);
+        fwrite(_node.send_file_name, sizeof(char), 16, file);
         
         while (check != 0) {                                   /* While para o usuário entrar com os dados dos seus Adjacentes */
                 printf("\ndestiny: ");
@@ -89,9 +89,9 @@ void Generator (Node _node)
                 _node._table[i].last_update = 0;
                 _node._table[i].time_out = 0;
 
-                fwrite(_node._table[i].destiny,     sizeof(char), 15, file);
+                fwrite( _node._table[i].destiny,     sizeof(char), 15, file);
                 fwrite(&_node._table[i].destiny_id,  sizeof(char),  1, file);
-                fwrite(_node._table[i].route_ip,    sizeof(char), 15, file);
+                fwrite( _node._table[i].route_ip,    sizeof(char), 15, file);
                 fwrite(&_node._table[i].route_id,    sizeof(char),  1, file);
                 fwrite(&_node._table[i].weight,      sizeof(int),   1, file);
                 fwrite(&_node._table[i].region,      sizeof(int),   1, file);
@@ -118,9 +118,9 @@ void Generator (Node _node)
                 _node._table[i].last_update = 11;
                 _node._table[i].time_out = 0;
 
-                fwrite(_node._table[i].destiny,     sizeof(char), 15, file);
+                fwrite(_ node._table[i].destiny,     sizeof(char), 15, file);
                 fwrite(&_node._table[i].destiny_id,  sizeof(char),  1, file);
-                fwrite(_node._table[i].route_ip,    sizeof(char), 15, file);
+                fwrite( _node._table[i].route_ip,    sizeof(char), 15, file);
                 fwrite(&_node._table[i].route_id,    sizeof(char),  1, file);
                 fwrite(&_node._table[i].weight,      sizeof(int),   1, file);
                 fwrite(&_node._table[i].region,      sizeof(int),   1, file);
@@ -142,19 +142,19 @@ void View (Node _node)
 
         FILE *file = fopen(_node.node_file, "r");
         
-        fread(_node.node_file,   sizeof(char), 16, file);
-        fread(&_node.node_id,     sizeof(char),  1, file);
-        fread(_node.node_ip,     sizeof(char), 15, file);
-        fread(&_node.node_region, sizeof(int),   1, file);
-        fread(_node.send_file_name,   sizeof(char), 16, file);
+        fread( _node.node_file,      sizeof(char), 16, file);
+        fread(&_node.node_id,        sizeof(char),  1, file);
+        fread( _node.node_ip,        sizeof(char), 15, file);
+        fread(&_node.node_region,    sizeof(int),   1, file);
+        fread( _node.send_file_name, sizeof(char), 16, file);
 
         printf("file: %s\nid: %c\nip: %s\nregion: %d\n\n", _node.node_file, _node.node_id, _node.node_ip, _node.node_region);
 
         while (i < MAX){
 
-                fread(_node._table[i].destiny,     sizeof(char), 15, file);
+                fread( _node._table[i].destiny,     sizeof(char), 15, file);
                 fread(&_node._table[i].destiny_id,  sizeof(char),  1, file);
-                fread(_node._table[i].route_ip,    sizeof(char), 15, file);
+                fread( _node._table[i].route_ip,    sizeof(char), 15, file);
                 fread(&_node._table[i].route_id,    sizeof(char),  1, file);
                 fread(&_node._table[i].weight,      sizeof(int),   1, file);
                 fread(&_node._table[i].region,      sizeof(int),   1, file);
