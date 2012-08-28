@@ -66,26 +66,32 @@ void Generator (Node _node)
         while (check != 0) {                                   /* While para o usuário entrar com os dados dos seus Adjacentes */
                 printf("\ndestiny: ");
                 scanf (" %s", _node._table[i].destiny);
+                getchar();
 
                 printf("\ndestiny_id: ");
                 //__fpurge(stdin);
-                rewind(stdin);
+                //rewind(stdin);
                 _node._table[i].destiny_id = getchar();
+                getchar();
 
                 printf("\nroute_ip: ");
                 scanf(" %s", _node._table[i].route_ip);
+                getchar();
 
                 printf("\nroute_ID: ");
                 //__fpurge(stdin);
-                rewind(stdin);
+                //rewind(stdin);
                 _node._table[i].route_id= getchar();
+                getchar();
 
                 printf("\nweight: ");
                 scanf(" %d", &_node._table[i].weight);
+                getchar();
 
                 printf("\nregion: ");
                 scanf(" %d", &_node._table[i].region);
-
+                getchar();
+                
                 _node._table[i].last_update = 0;
                 _node._table[i].time_out = 0;
 
