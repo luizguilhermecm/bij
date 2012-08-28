@@ -51,8 +51,11 @@ int main( int argc, char *argv[])
         int i = 0;
         while (_arg._table[i].destiny_id != '0'){   //FIX: if destiny_id was a region
 
-                _arg.send_file_name[0] = _arg._table[i].destiny_id; /* Muda somente o ID do nome, não efetua mudanças no IP */
-
+                strcpy (send_file_name, &_arg._table[i].destiny_id);
+                strcat (send_file_name, _arg._table[i].destiny);
+                
+                strcpy (_arg.send_file_name, send_file_name);
+                
                 _adjacent = clnt_create (_arg._table[i].destiny, BIJ_PROG, BIJ_VERSION, "udp"); // the first parameter is the IP of destiny
 
                 Router (_adjacent, _arg); /* Envia a tabela para o adjacente conforme a variável i */
