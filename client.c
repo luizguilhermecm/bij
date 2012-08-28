@@ -16,14 +16,13 @@ void SendTable (Node _node);
 
 void Router(CLIENT *clnt, Node _arg)
 {
-        Node _package;
-        Node * _result;
+        Node _package;     /* Objeto do tipo Node que será enviado como parâmetro no router_l ( Método remoto ) */
+        Node * _result;    /* ??????????????????????????????? */
         
-        _package = _arg;
-        /* Put the _arg into _package */
-
-        /* chama a função remota */
-        _result = router_1 (&_package,clnt);
+        _package = _arg;   /* Copia o argumento para a variável _package que será passada para a função remota */
+        
+        _result = router_1 (&_package,clnt);  /* Efetua a chamada da função remota */
+        
         if (_result == NULL)
         {
                 printf ("Problemas ao chamar a função remota\n");
@@ -33,17 +32,18 @@ void Router(CLIENT *clnt, Node _arg)
 int main( int argc, char *argv[])
 {
         CLIENT *clnt;
-        CLIENT *_send_to; // That will be responsible for communication with other servers
-        Node _arg;
-        Node _result;
-
-        char file_name [16];
-        char send_file_name[16];
-
-        strcpy (file_name, argv[2]);
-        strcat (file_name, argv[1]);
+        CLIENT *_send_to; /* Será responsável pela comunicação com os outros servidores     */
+        Node _arg;        /* Armazenará o conteúdo do arquivo do servidor local             */
         
-        _arg = Read(file_name, _arg); // Read my file;
+        Node _result; /* @@@ @@@ @@@ ?????????????????????????????????????????? @@@ @@@ @@@ */
+
+        char file_name [16];          /* Nome do arquivo LOCAL                              */
+        char send_file_name[16];      /* Nome do arquivo que será aberto no SERVIDOR REMOTO */
+
+        strcpy (file_name, argv[2]);  /* Parâmetro ID Exemplo: a                            */
+        strcat (file_name, argv[1]);  /* Parâmetro IP Exemplo: 192.168.189.210              */
+        
+        _arg = Read(file_name, _arg); /* Lê o arquivo LOCAL                                 */
         
 
 
@@ -52,12 +52,14 @@ int main( int argc, char *argv[])
         int i = 0;
         while (_arg._table[i].last_update == 0){
                 CLIENT * send;
+                
                 send = clnt_create (argv[1], BIJ_PROG, BIJ_VERSION, "udp");
 
-                _arg.send_file_name[0] = _arg._table[i].destiny_id; // Change ID in string
+                _arg.send_file_name[0] = _arg._table[i].destiny_id; /* Muda somente o ID do nome, não efetua mudanças no IP */
+                
                 i++;
 
-                Router (clnt, _arg); 
+                Router (clnt, _arg); /* Envia a tabela para o adjacente conforme a variável i */
         }
 
 
