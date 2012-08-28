@@ -9,3 +9,6 @@ client
 server
 *.pdf
 *.tar.gz
+generator
+client
+server
