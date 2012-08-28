@@ -21,6 +21,7 @@ struct Node
         char node_id;
         char node_ip[15];
         int node_region;
+        char send_file_name[16];
         struct Adjacent _table[MAX]; 
 };
 

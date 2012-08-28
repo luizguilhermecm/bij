@@ -12,8 +12,9 @@
 
 Node Read (char file_name[], Node _node);
 void Write (char file_name[], Node _node);
+void SendTable (Node _node);
 
-Node Router(CLIENT *clnt, Node _arg)
+void Router(CLIENT *clnt, Node _arg)
 {
         Node _package;
         Node * _result;
@@ -26,29 +27,41 @@ Node Router(CLIENT *clnt, Node _arg)
         if (_result == NULL)
         {
                 printf ("Problemas ao chamar a função remota\n");
-                return _arg;
         }
-        return (*_result);
 }
 
 int main( int argc, char *argv[])
 {
         CLIENT *clnt;
+        CLIENT *_send_to; // That will be responsible for communication with other servers
         Node _arg;
         Node _result;
 
         char file_name [16];
+        char send_file_name[16];
 
         strcpy (file_name, argv[2]);
         strcat (file_name, argv[1]);
         
+        _arg = Read(file_name, _arg); // Read my file;
+        
 
-        _arg = Read(file_name, _arg);
 
         /* cria uma KEEPING CLIENT que referencia uma interface RPC */
         clnt = clnt_create (argv[1], BIJ_PROG, BIJ_VERSION, "udp");
+        int i = 0;
+        while (_arg._table[i].last_update == 0){
+                CLIENT * send;
+                send = clnt_create (argv[1], BIJ_PROG, BIJ_VERSION, "udp");
+
+                _arg.send_file_name[0] = _arg._table[i].destiny_id; // Change ID in string
+                i++;
+
+                Router (clnt, _arg); 
+        }
 
 
+//        _arg = Read(file_name, _arg); // Read my file;
         /* verifica se a referência foi criada */
         if (clnt == (CLIENT *) NULL)
         {
@@ -59,16 +72,17 @@ int main( int argc, char *argv[])
         /* make your job */
 
         /* executa os procedimentos remotos */
-        _result =  Router (clnt, _arg); 
 
-        Write(file_name, _result);
+//        Write(file_name, _result);
 
 
-        _result = Read (file_name, _result);
+ //       _result = Read (file_name, _result);
         /* save _result in somewhere */
         return 0;
 } 
 
+void SendTable (Node _node){
+}
 
 Node Read (char file_name[], Node _node){
 
@@ -81,8 +95,9 @@ Node Read (char file_name[], Node _node){
         fread(&_node.node_id,     sizeof(char),  1, file);
         fread(_node.node_ip,     sizeof(char), 15, file);
         fread(&_node.node_region, sizeof(int),   1, file);
+        fread(_node.send_file_name,   sizeof(char), 16, file);
 
-        printf("file: %s\nid: %c\nip: %s\nregion: %d\n\n", _node.node_file, _node.node_id, _node.node_ip, _node.node_region);
+        printf("file: %s\nid: %c\nip: %s\nregion: %d\nsend_file_name: %s\n\n", _node.node_file, _node.node_id, _node.node_ip, _node.node_region, _node.send_file_name);
 
         while (i < MAX){
 
@@ -121,6 +136,7 @@ void Write (char file_name[], Node _node)
         fwrite(&_node.node_id,     sizeof(char),  1, file);
         fwrite(_node.node_ip,     sizeof(char), 15, file);
         fwrite(&_node.node_region, sizeof(int),   1, file);
+        fwrite(_node.send_file_name,   sizeof(char), 16, file);
 
         while (i < MAX){
                 fwrite(_node._table[i].destiny,     sizeof(char), 15, file);

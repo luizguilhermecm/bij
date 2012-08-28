@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio_ext.h>
 
 
 #define MAX 50
@@ -39,6 +38,7 @@ typedef struct Node
         char   node_id;            /* Conterá o ID Ex.: b                                               */
         char   node_ip[15];           /* Conterá o IP do Nó Ex.: 192.90.30.211                             */
         int    node_region;           /* Terá a região do no a qual ele pertence                           */
+        char   send_file_name[16];           /* Conterá o IP do Nó Ex.: 192.90.30.211                             */
         struct Adjacent _table[MAX];  /* Vetor de estruturas do tipo Adjacent contendo os adjacentes do Nó */
 }Node;
 
@@ -61,30 +61,29 @@ void Generator (Node _node)
         fwrite(&_node.node_id,     sizeof(char),  1, file);
         fwrite(_node.node_ip,     sizeof(char), 15, file);
         fwrite(&_node.node_region, sizeof(int),   1, file);
+        fwrite(_node.send_file_name,   sizeof(char), 16, file);
         
         while (check != 0) {                                   /* While para o usuário entrar com os dados dos seus Adjacentes */
                 printf("\ndestiny: ");
-                __fpurge(stdin);
                 scanf (" %s", _node._table[i].destiny);
 
                 printf("\ndestiny_id: ");
-                __fpurge(stdin);
+                //__fpurge(stdin);
+                rewind(stdin);
                 _node._table[i].destiny_id = getchar();
 
                 printf("\nroute_ip: ");
-                __fpurge(stdin);
                 scanf(" %s", _node._table[i].route_ip);
 
                 printf("\nroute_ID: ");
-                __fpurge(stdin);
+                //__fpurge(stdin);
+                rewind(stdin);
                 _node._table[i].route_id= getchar();
 
                 printf("\nweight: ");
-                __fpurge(stdin);
                 scanf(" %d", &_node._table[i].weight);
 
                 printf("\nregion: ");
-                __fpurge(stdin);
                 scanf(" %d", &_node._table[i].region);
 
                 _node._table[i].last_update = 0;
@@ -116,7 +115,7 @@ void Generator (Node _node)
                 _node._table[i].route_id = '0';
                 _node._table[i].weight = 0;
                 _node._table[i].region = 0;
-                _node._table[i].last_update = 0;
+                _node._table[i].last_update = 11;
                 _node._table[i].time_out = 0;
 
                 fwrite(_node._table[i].destiny,     sizeof(char), 15, file);
@@ -147,6 +146,7 @@ void View (Node _node)
         fread(&_node.node_id,     sizeof(char),  1, file);
         fread(_node.node_ip,     sizeof(char), 15, file);
         fread(&_node.node_region, sizeof(int),   1, file);
+        fread(_node.send_file_name,   sizeof(char), 16, file);
 
         printf("file: %s\nid: %c\nip: %s\nregion: %d\n\n", _node.node_file, _node.node_id, _node.node_ip, _node.node_region);
 
@@ -180,6 +180,8 @@ int main(int argc, char *argv[])
 
         strcpy(_node.node_file, argv[1]);    /* Copia o node_id  para o node_file Ex.: a                */
         strcat(_node.node_file, argv[2]);    /* Copia o node_ip  para o node_file Ex.: a192.168.110.220 */
+
+        strcpy(_node.send_file_name, _node.node_file);
 
         /* O node_file será o nome do arquivo que terá as informações dos adjacentes e também o ID do nó      */
         /* possibilitando assim, a simulação de vários nodes ( Computadores ) na mesma máquina tendo a        */
