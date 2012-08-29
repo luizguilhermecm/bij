@@ -20,6 +20,7 @@ void Write (char file_name[], Node _node);
 Node * router_1_svc (Node * argp, struct svc_req *rqstp)
 {
         int i,j,count;
+        char id_region[3];
         static Node _package;
         Node _node;
         _package = *argp;     /* _package recebe o conteúdo do ponteiro passado por parâmetro
@@ -28,7 +29,10 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                                   ou uma nova rota for descoberta ou uma rota de menor custo for encontrada. */
         
         _node = Read(_package.send_file_name);
-
+        if (strcmp(_node.send_file_name, "NULL") == 0){
+             strcpy(_package.send_file_name, _node.send_file_name);
+             return (&_package);
+        }
         i = 0;
         j = 0;
         count = 0;
@@ -39,6 +43,7 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                         while (j < MAX){
                                 if(strcmp(_node._table[j].destiny_id, _package._table[i].destiny_id) == 0){
                                         if(_node._table[j].weight > (_package._table[i].weight + 1) ){
+
                                                 strcpy(_node._table[j].route_ip, _package.node_ip);
                                                 strcpy(_node._table[j].route_id, _package.node_id);
                                                 _node._table[j].weight = _package._table[i].weight + 1;
@@ -56,9 +61,16 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                         }
                         while (count < MAX){
                                 if ( (_node.node_region == _package._table[i].region
-                                                || _package._table[i].region == 99) ){
+                                                || _package._table[i].region == 99 ) 
+                                                && strcmp(_node.node_id, _package._table[i].destiny_id) != 0 ){
+//                                                && strcmp(_node._table[count].destiny_id, _package._table[i].destiny_id) != 0){
 
-                                        if (strcmp(_node._table[count].destiny_id, "0") == 0){
+                                        id_region[0] = 'r';
+                                        id_region[1] = (char)(((int)'0')+_node.node_region);
+                                        
+                                        if (strcmp(_node._table[count].destiny_id, "0") == 0 
+                                                        && strcmp(_package._table[i].destiny_id, id_region) != 0 ){
+
                                                 strcpy(_node._table[count].destiny_id, _package._table[i].destiny_id);
                                                 strcpy(_node._table[count].destiny, _package._table[i].destiny);
                                                 strcpy(_node._table[count].route_ip, _package.node_ip);
@@ -93,6 +105,7 @@ Node Read (char file_name[]){
         FILE *file = fopen(file_name, "r");
 
         if (file == NULL) {
+                strcpy(_node.send_file_name, "NULL");
                 return _node;
         }
 

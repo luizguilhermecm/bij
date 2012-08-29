@@ -6,12 +6,15 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include "bij.h"
 
 #define MAX 20
 
 Node Read      (char file_name[]);
 void Write     (char file_name[], Node _node);
+void Erro ();
 
 
 /*
@@ -20,11 +23,10 @@ void Write     (char file_name[], Node _node);
 **             E o Node com as informações que serão 
 **             enviadas para o servidor REMOTO
 */
-void Router(CLIENT *clnt, Node _arg)
+Node Router(CLIENT *clnt, Node _arg)
 {
         Node _package;     /* Objeto do tipo Node que será enviado como parâmetro no router_l ( Método remoto ) */
         Node * _result;    /* Receive the return of server */
-        
         _package = _arg;   /* Copia o argumento para a variável _package que será passada para a função remota */
         
         _result = router_1 (&_package,clnt);  /* Efetua a chamada da função remota */
@@ -32,7 +34,9 @@ void Router(CLIENT *clnt, Node _arg)
         if (_result == NULL)
         {
                 printf ("Problemas ao chamar a função remota\n");
+                exit(EXIT_FAILURE);
         }
+        return *_result;
 }
 
 int main( int argc, char *argv[])
@@ -40,6 +44,7 @@ int main( int argc, char *argv[])
         CLIENT *clnt;
         CLIENT * _adjacent; // will be used to send table for adjacents
         Node _arg;        /* Armazenará o conteúdo do arquivo do servidor local             */
+        Node _erro;
         int i,j,count;
         char id_region[3];
         
@@ -53,7 +58,7 @@ int main( int argc, char *argv[])
 
         i = 0;
         while (strcmp(_arg._table[i].destiny, "0") != 0){
-                if(_arg.node_region != _arg._table[i].region){
+                if(_arg.node_region != _arg._table[i].region && _arg._table[i].region != 99){
                         id_region[0] = 'r';
                         id_region[1] = (char)(((int)'0')+_arg._table[i].region);
                         count = 0;
@@ -72,12 +77,17 @@ int main( int argc, char *argv[])
                                                 Write(file_name, _arg);
                                                 _arg = Read(file_name);
                                         }
+                                        else{
+                                                count = MAX;
+                                                j = MAX;
+                                        }
                                 }
                                 count++;
                         }
 
                         while (j < MAX){
-                                if (strcmp(_arg._table[j].destiny_id, "0") == 0){
+                                if (strcmp(_arg._table[j].destiny_id, "0") == 0
+                                                && _arg._table[i].region != 99){
                                         id_region[0] = 'r';
                                         id_region[1] = (char)(((int)'0')+_arg._table[i].region);
                                         strcpy(_arg._table[j].destiny_id, id_region);
@@ -96,9 +106,9 @@ int main( int argc, char *argv[])
                 i++;
         }
         i = 0;
-        while (strcmp(_arg._table[i].destiny_id, "0") != 0){
+        while (strcmp(_arg._table[i].destiny_id, "0") != 0
+                        && _arg._table[i].region != 99){
 
-                printf("DEBUG");
                 strcpy (send_file_name, _arg._table[i].destiny_id);
                 strcat (send_file_name, _arg._table[i].destiny);
                 
@@ -106,7 +116,12 @@ int main( int argc, char *argv[])
                 
                 _adjacent = clnt_create (_arg._table[i].destiny, BIJ_PROG, BIJ_VERSION, "udp"); // the first parameter is the IP of destiny
 
-                Router (_adjacent, _arg); /* Envia a tabela para o adjacente conforme a variável i */
+                _erro = Router (_adjacent, _arg); /* Envia a tabela para o adjacente conforme a variável i */
+                if (strcmp(_erro.send_file_name, "NULL") == 0){
+                        printf("Arquivo não existe no server");
+                        exit(EXIT_FAILURE);
+                        //TODO: what we gonna do here?
+                }
                 i++;
         }
 //        _arg = Read(file_name, _arg)) // Read my file;
@@ -146,7 +161,8 @@ Node Read (char file_name[]){
         FILE *file = fopen(file_name, "r");
         
         if (file == NULL) {
-                return _node;
+                printf("\nArquivo não encontrado\n");
+                exit(EXIT_FAILURE);
         }
 
         fread( _node.node_file,      sizeof(char), 18, file);
