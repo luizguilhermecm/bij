@@ -1,6 +1,6 @@
 bij /'bɪʒ/
 
-Trabalho da matéria de Sistemas Operacionais.
+Operational Systems Assignment
 
 That software has the objective of make a hierarchical routing with regions.
 Its starts with an initial table what had all the adjacent nodes.
@@ -12,7 +12,7 @@ Compiling:      $make
 make compile the RPC and make gen compile the generator of nodes.
 
 Limitations: That software works with a limitation what is decided in MAX variable in bij.x, client.c, server.c and node_generator.c
-MAX is the maximum of lines in table, so, the number of adjacents multiplied for number of regions has to be less than MAX.
+MAX is the maximum of lines in table, so, the number of adjacents plus number of regions has to be less than MAX.
 
 Students:
         Breno Naodi Kusunoki
