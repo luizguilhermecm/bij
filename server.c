@@ -115,6 +115,7 @@ Node Read (char file_name[]){
         printf("\n");
 
         fclose(file);
+        return _node;
 }
 
 /*
@@ -126,7 +127,7 @@ void Write (char file_name[], Node _node)
 {
         int i = 0;                    /* Variável de controle p/ o n. de entradas não exceder o tamanho Máximo da _table[MAX] */
         
-        FILE *file = fopen("00", "w");       /* Abre o arquivo com permissão w
+        FILE *file = fopen("file_name", "w");       /* Abre o arquivo com permissão w
                                                            Abrir um arquivo texto para gravação. 
                                                            Se o arquivo não existir, ele será criado. 
                                                            Se já existir, o conteúdo anterior será destruído. */
