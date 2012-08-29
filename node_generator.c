@@ -64,7 +64,7 @@ void Generator (Node _node)
         fwrite(_node.send_file_name, sizeof(char), 18, file);
         
         while (check != 0) {                                   /* While para o usuário entrar com os dados dos seus Adjacentes */
-                printf("\ndestiny: ");
+                printf("\ndestiny_IP: ");
                 scanf (" %s", _node._table[i].destiny);
                 getchar();
 

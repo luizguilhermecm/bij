@@ -12,7 +12,6 @@
 
 Node Read      (char file_name[]);
 void Write     (char file_name[], Node _node);
-void SendTable (Node _node);
 
 
 /*
@@ -41,6 +40,8 @@ int main( int argc, char *argv[])
         CLIENT *clnt;
         CLIENT * _adjacent; // will be used to send table for adjacents
         Node _arg;        /* Armazenará o conteúdo do arquivo do servidor local             */
+        int i,j,count;
+        char id_region[3];
         
         char send_file_name[17];      /* Nome do arquivo que será aberto no SERVIDOR REMOTO */
         char file_name [17];          /* Nome do arquivo LOCAL                              */
@@ -49,7 +50,52 @@ int main( int argc, char *argv[])
         strcat (file_name, argv[2]);  /* Parâmetro IP Exemplo: 192.168.189.210              */
         
         _arg = Read(file_name); /* Lê o arquivo LOCAL                                 */
-        int i = 0;
+
+        i = 0;
+        while (strcmp(_arg._table[i].destiny, "0") != 0){
+                if(_arg.node_region != _arg._table[i].region){
+                        id_region[0] = 'r';
+                        id_region[1] = (char)(((int)'0')+_arg._table[i].region);
+                        count = 0;
+                        j = 0;
+
+                        while (count < MAX){
+                                if (strcmp(_arg._table[count].destiny_id, id_region) == 0){
+                                        if (_arg._table[count].weight > _arg._table[i].weight){
+                                                strcpy(_arg._table[count].route_ip, _arg._table[i].route_ip);
+                                                strcpy(_arg._table[count].route_id, _arg._table[i].route_id);
+                                                _arg._table[count].weight = _arg._table[i].weight;
+
+                                                count = MAX;
+                                                j = MAX; 
+
+                                                Write(file_name, _arg);
+                                                _arg = Read(file_name);
+                                        }
+                                }
+                                count++;
+                        }
+
+                        while (j < MAX){
+                                if (strcmp(_arg._table[j].destiny_id, "0") == 0){
+                                        id_region[0] = 'r';
+                                        id_region[1] = (char)(((int)'0')+_arg._table[i].region);
+                                        strcpy(_arg._table[j].destiny_id, id_region);
+                                        strcpy(_arg._table[j].route_ip, _arg._table[i].route_ip);
+                                        strcpy(_arg._table[j].route_id, _arg._table[i].route_id);
+                                        _arg._table[j].weight = _arg._table[i].weight;
+                                        _arg._table[j].region = 99;
+
+                                        j = MAX;
+                                        Write(file_name, _arg);
+                                        _arg = Read(file_name);
+                                }
+                                j++;
+                        }
+                }
+                i++;
+        }
+        i = 0;
         while (strcmp(_arg._table[i].destiny_id, "0") != 0){
 
                 printf("DEBUG");
@@ -63,7 +109,7 @@ int main( int argc, char *argv[])
                 Router (_adjacent, _arg); /* Envia a tabela para o adjacente conforme a variável i */
                 i++;
         }
-//        _arg = Read(file_name, _arg); // Read my file;
+//        _arg = Read(file_name, _arg)) // Read my file;
 
         /* cria uma KEEPING CLIENT que referencia uma interface RPC */
 //        clnt = clnt_create (argv[1], BIJ_PROG, BIJ_VERSION, "udp");
@@ -85,14 +131,6 @@ int main( int argc, char *argv[])
         /* save _result in somewhere */
         return 0;
 } 
-
-
-/*
-**  Função: SendTable
-**  Descrição: BULHUFAS
-*/
-void SendTable (Node _node){
-}
 
 
 /*
