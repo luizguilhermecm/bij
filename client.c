@@ -106,23 +106,29 @@ int main( int argc, char *argv[])
                 i++;
         }
         i = 0;
-        while (strcmp(_arg._table[i].destiny_id, "0") != 0
-                        && _arg._table[i].region != 99){
+        clock_t temp;
+        while (1){
+                temp = clock() + CLOCKS_PER_SEC * 10;
+                while (clock() < temp){}
+                while (strcmp(_arg._table[i].destiny_id, "0") != 0
+                                && _arg._table[i].region != 99){
 
-                strcpy (send_file_name, _arg._table[i].destiny_id);
-                strcat (send_file_name, _arg._table[i].destiny);
-                
-                strcpy (_arg.send_file_name, send_file_name);
-                
-                _adjacent = clnt_create (_arg._table[i].destiny, BIJ_PROG, BIJ_VERSION, "udp"); // the first parameter is the IP of destiny
+                        strcpy (send_file_name, _arg._table[i].destiny_id);
+                        strcat (send_file_name, _arg._table[i].destiny);
 
-                _erro = Router (_adjacent, _arg); /* Envia a tabela para o adjacente conforme a variável i */
-                if (strcmp(_erro.send_file_name, "NULL") == 0){
-                        printf("Arquivo não existe no server");
-                        exit(EXIT_FAILURE);
-                        //TODO: what we gonna do here?
+                        strcpy (_arg.send_file_name, send_file_name);
+
+                        _adjacent = clnt_create (_arg._table[i].destiny, BIJ_PROG, BIJ_VERSION, "udp"); // the first parameter is the IP of destiny
+
+                        _erro = Router (_adjacent, _arg); /* Envia a tabela para o adjacente conforme a variável i */
+                        if (strcmp(_erro.send_file_name, "NULL") == 0){
+                                printf("Arquivo não existe no server");
+                                exit(EXIT_FAILURE);
+                                //TODO: what we gonna do here?
+                        }
+                        i++;
                 }
-                i++;
+                i = 0;
         }
 //        _arg = Read(file_name, _arg)) // Read my file;
 
