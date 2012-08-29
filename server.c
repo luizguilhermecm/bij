@@ -33,24 +33,31 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
         j = 0;
         count = 0;
         while (i < MAX){
+                j = 0;
+                count = 0;
                 if(strcmp(_package._table[i].destiny_id, "0") != 0){
                         while (j < MAX){
-                                if(strcmp(_node._table[j].destiny_id, _package._table[i].destiny_id) != 0){
-                                        if(_node._table[j].weight > (_package._table[i].weight + 1)){
-                                                strcpy(_node._table[j].route_ip, _package._table[i].route_ip);
-                                                strcpy(_node._table[j].route_id, _package._table[i].route_id);
+                                if(strcmp(_node._table[j].destiny_id, _package._table[i].destiny_id) == 0){
+                                        if(_node._table[j].weight > (_package._table[i].weight + 1) ){
+                                                strcpy(_node._table[j].route_ip, _package.node_ip);
+                                                strcpy(_node._table[j].route_id, _package.node_id);
                                                 _node._table[j].weight = _package._table[i].weight + 1;
                                                 
                                                 j = MAX;
                                                 count = MAX;
                                                 Write (_package.send_file_name, _node);
                                         }
+                                        else {
+                                                j = MAX;
+                                                count = MAX;
+                                        }
                                 }
                                 j++;
                         }
                         while (count < MAX){
-                                if (_node.node_region == _package._table[i].region
-                                                || _package._table[i].region == 99){
+                                if ( (_node.node_region == _package._table[i].region
+                                                || _package._table[i].region == 99) ){
+
                                         if (strcmp(_node._table[count].destiny_id, "0") == 0){
                                                 strcpy(_node._table[count].destiny_id, _package._table[i].destiny_id);
                                                 strcpy(_node._table[count].destiny, _package._table[i].destiny);
@@ -69,28 +76,6 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                 }
                 i++;
         }
-
-//        Write(_package.send_file_name, _package);
-
-//        Node _aux = Read(_package.send_file_name); 
-        /* Instancia um novo Node chamado _aux e passa por parâmetro
-                                                            o nome do arquivo LOCAL ( send_file_name ) que foi enviado
-                                                            pelo CLIENT e o _aux para receber o objeto do tipo Node
-                                                            contendo informações do arquivo LOCAL                      */
-        
-
-//        while (_package._table[i].last_update == 0){                 /* BETA >> */
-//                if(hasId(_aux._table[i].destiny_id, _aux) == 0){
-//                        _aux._table[i] = _package._table[i]; 
-//                }
-//                i++;
-//        }
-        //Node _main;
-        // The struct which came of client was in _package, make changes just above
-        /* The magic works happens here */
-
-//        Write(_package.send_file_name, _aux);
-//        _aux = Read (_package.send_file_name);
 
         return (&_package);
 }
