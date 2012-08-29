@@ -1,12 +1,21 @@
-/'bɪʒ/
-/ˈbɪʤ/
+bij /'bɪʒ/
 
 Trabalho da matéria de Sistemas Operacionais.
 
-Descrição: RPC, more than that maybe later. 
+That software has the objective of make a hierarchical routing with regions.
+Its starts with an initial table what had all the adjacent nodes.
+The table is made with a node_generator.c and for run it need pass 2 arguments (id and ip).
 
-Alunos:
+Compiling:      $make
+                $make gen
+
+make compile the RPC and make gen compile the generator of nodes.
+
+Limitations: That software works with a limitation what is decided in MAX variable in bij.x, client.c, server.c and node_generator.c
+MAX is the maximum of lines in table, so, the number of adjacents multiplied for number of regions has to be less than MAX.
+
+Students:
         Breno Naodi Kusunoki
         Luiz Guilherme Castilho Martins
 
-Professor: Sakuray
+Teacher: Sakuray
