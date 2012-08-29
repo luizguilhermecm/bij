@@ -1,14 +1,14 @@
 #define PROGRAM_NUMBER 100002494038693
 #define VERSION_NUMBER 1
 
-#define MAX 50
+#define MAX 20
 
 struct Adjacent 
 {
-        char destiny[15];
-        char destiny_id[2]; /* if destiny_id was a region it needs be fixed.*/
-        char route_ip[15];
-        char route_id[2];
+        char destiny[16];
+        char destiny_id[3]; /* if destiny_id was a region it needs be fixed.*/
+        char route_ip[16];
+        char route_id[3];
         int  weight;
         int  region;
         int  last_update;
@@ -17,11 +17,11 @@ struct Adjacent
 
 struct Node
 {
-        char   node_file[17];
-        char   node_id[2];
-        char   node_ip[15];
+        char   node_file[18];
+        char   node_id[3];
+        char   node_ip[16];
         int    node_region;
-        char   send_file_name[17];
+        char   send_file_name[18];
         struct Adjacent _table[MAX]; 
 };
 
