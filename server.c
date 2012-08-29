@@ -92,6 +92,10 @@ Node Read (char file_name[]){
 
         FILE *file = fopen(file_name, "r");
 
+        if (file == NULL) {
+                return _node;
+        }
+
         fread( _node.node_file,      sizeof(char), 18, file);
         fread( _node.node_id,        sizeof(char),  3, file);
         fread( _node.node_ip,        sizeof(char), 16, file);

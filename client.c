@@ -144,6 +144,10 @@ Node Read (char file_name[]){
         int i = 0;
 
         FILE *file = fopen(file_name, "r");
+        
+        if (file == NULL) {
+                return _node;
+        }
 
         fread( _node.node_file,      sizeof(char), 18, file);
         fread( _node.node_id,        sizeof(char),  3, file);
@@ -219,7 +223,9 @@ void Write (char file_name[], Node _node)
                                                            Abrir um arquivo texto para gravação. 
                                                            Se o arquivo não existir, ele será criado. 
                                                            Se já existir, o conteúdo anterior será destruído. */
-
+        if (file == NULL) {
+                return;
+        }                                                           
         /* Escreve as informações do nó. Nome do arquivo, id, IP e a região a qual ele pertence */
         fwrite(_node.node_file,      sizeof(char), 18, file);
         fwrite(_node.node_id,       sizeof(char),  3, file);
