@@ -63,7 +63,7 @@ Node Read (char file_name[]){
         Node _node;
         int i = 0;
 
-        FILE *file = fopen(_node.node_file, "r");
+        FILE *file = fopen(file_name, "r");
         
         fread( _node.node_file,      sizeof(char), 17, file);
         fread( _node.node_id,        sizeof(char),  2, file);
@@ -127,7 +127,7 @@ void Write (char file_name[], Node _node)
         int check = 1;                /* Condição de parada do while(...) */
         int i = 0;                    /* Variável de controle p/ o n. de entradas não exceder o tamanho Máximo da _table[MAX] */
         
-        FILE *file = fopen(_node.node_file, "w");       /* Abre o arquivo com permissão w
+        FILE *file = fopen(file_name, "w");       /* Abre o arquivo com permissão w
                                                            Abrir um arquivo texto para gravação. 
                                                            Se o arquivo não existir, ele será criado. 
                                                            Se já existir, o conteúdo anterior será destruído. */
