@@ -2,6 +2,7 @@ bij /'bɪʒ/
 
 Operational Systems Assignment
 
+Description:
 That software has the objective of make a hierarchical routing with regions.
 Its starts with an initial table what had all the adjacent nodes.
 The table is made with a node_generator.c and for run it need pass 2 arguments (id and ip).
@@ -14,8 +15,39 @@ make compile the RPC and make gen compile the generator of nodes.
 Limitations: That software works with a limitation what is decided in MAX variable in bij.x, client.c, server.c and node_generator.c
 MAX is the maximum of lines in table, so, the number of adjacents plus number of regions has to be less than MAX.
 
+Prerequisite: To compile RPC we use the command $rpcgen, but we need a port map in linux or macport in mac, or similars. So man, make your job.
+
 Students:
         Breno Naodi Kusunoki
         Luiz Guilherme Castilho Martins
 
 Teacher: Sakuray
+
+Example:
+If you already compiled.
+In that example we will run bij in two different computers in same network.
+...
+Lets create two simple adjacents nodes, node A in 192.168.0.10 and B in 192.168.0.20, both adjacents.
+Creating node A: $./generator A 192.168.0.10
+region: 1
+destiny: 192.168.0.20
+destiny_id: B
+router_id: B
+router_ip: 192.168.0.20
+weigth: 1
+region: 1
+press 0 to quit
+---
+Do the same thing for node B, $./generator B 192.168.0.2 (Look, destiny and router_ip is an IP of adjacent node, so put the IP of A in node B).
+...
+Now, if you want see the table of some node which you created before you can call $./generator filename
+The name of file will be the ID concatened with IP, like, $./generator B192.168.0.2
+...
+Ok, Now we need run the server of RPC and them the client.
+It's better if you use two windows of terminal, one for server and other for client.
+Running the server: $./server
+Now in other windows we need call the client with two parameters, the ID of my node and my IP.
+$./client A 192.168.0.10
+Ok, now bij will send to B its table every 10 seconds, and if your runned the client of B it's gonna send its table to A every 10 second too.
+
+Alright, that example give to you the general idea about bij, so now you can look the code and understand it, if you want you can change all of things you need.
