@@ -107,6 +107,7 @@ void Generator (Node _node)
                 } else {
                         printf("press 0 to quit");
                         scanf ("%d", &check);
+                        getchar();
                 }
         }
 
