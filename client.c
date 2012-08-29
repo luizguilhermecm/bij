@@ -43,7 +43,9 @@ int main( int argc, char *argv[])
         Node _arg;        /* Armazenará o conteúdo do arquivo do servidor local             */
         
         char send_file_name[16];      /* Nome do arquivo que será aberto no SERVIDOR REMOTO */
+        char * id;
         char file_name [16];          /* Nome do arquivo LOCAL                              */
+
         strcpy (file_name, argv[1]);  /* Parâmetro ID Exemplo: a                            */
         strcat (file_name, argv[2]);  /* Parâmetro IP Exemplo: 192.168.189.210              */
         
@@ -51,12 +53,10 @@ int main( int argc, char *argv[])
         int i = 0;
         while (_arg._table[i].destiny_id != '0'){   //FIX: if destiny_id was a region
 
-                strcpy (send_file_name, &_arg._table[i].destiny_id);
-                strcat (send_file_name, _arg._table[i].destiny);
+                strcpy (_arg.send_file_name, "zzzzzzzzzz");
+                strcpy (send_file_name, "localhost");
                 
-                strcpy (_arg.send_file_name, send_file_name);
-                
-                _adjacent = clnt_create (_arg._table[i].destiny, BIJ_PROG, BIJ_VERSION, "udp"); // the first parameter is the IP of destiny
+                _adjacent = clnt_create (send_file_name, BIJ_PROG, BIJ_VERSION, "udp"); // the first parameter is the IP of destiny
 
                 Router (_adjacent, _arg); /* Envia a tabela para o adjacente conforme a variável i */
                 i++;
@@ -64,13 +64,13 @@ int main( int argc, char *argv[])
 //        _arg = Read(file_name, _arg); // Read my file;
 
         /* cria uma KEEPING CLIENT que referencia uma interface RPC */
-        clnt = clnt_create (argv[1], BIJ_PROG, BIJ_VERSION, "udp");
+//        clnt = clnt_create (argv[1], BIJ_PROG, BIJ_VERSION, "udp");
         /* verifica se a referência foi criada */
-        if (clnt == (CLIENT *) NULL)
-        {
-                clnt_pcreateerror (argv[1]);
-                return 0;
-        }
+//        if (clnt == (CLIENT *) NULL)
+//        {
+//                clnt_pcreateerror (argv[1]);
+//                return 0;
+//        }
 
         /* make your job */
 
