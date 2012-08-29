@@ -54,9 +54,9 @@ int main( int argc, char *argv[])
         while (_arg._table[i].destiny_id != '0'){   //FIX: if destiny_id was a region
 
                 strcpy (_arg.send_file_name, "zzzzzzzzzz");
-                strcpy (send_file_name, "localhost");
+                strcpy (send_file_name, "189.90.72.195");
                 
-                _adjacent = clnt_create (send_file_name, BIJ_PROG, BIJ_VERSION, "udp"); // the first parameter is the IP of destiny
+                _adjacent = clnt_create (argv[3], BIJ_PROG, BIJ_VERSION, "udp"); // the first parameter is the IP of destiny
 
                 Router (_adjacent, _arg); /* Envia a tabela para o adjacente conforme a variável i */
                 i++;
