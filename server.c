@@ -13,22 +13,64 @@
 #define MAX 20
 
 /* Funções Globais */
-int hasId (char id, Node _main);
 Node Read (char file_name[]);
 void Write (char file_name[], Node _node);
 
 /* implementação da função add */
 Node * router_1_svc (Node * argp, struct svc_req *rqstp)
 {
-        int i = 0;
+        int i,j,count;
         static Node _package;
-
+        Node _node;
         _package = *argp;     /* _package recebe o conteúdo do ponteiro passado por parâmetro
                                   contendo o arquivo que deverá ser comparado com o arquivo LOCAL
                                   e o mesmo deverá ser atualizado caso algum nó adjacente for desconectado
                                   ou uma nova rota for descoberta ou uma rota de menor custo for encontrada. */
         
-        Write(_package.send_file_name, _package);
+        _node = Read(_package.send_file_name);
+
+        i = 0;
+        j = 0;
+        count = 0;
+        while (i < MAX){
+                if(strcmp(_package._table[i].destiny_id, "0") != 0){
+                        while (j < MAX){
+                                if(strcmp(_node._table[j].destiny_id, _package._table[i].destiny_id) != 0){
+                                        if(_node._table[j].weight > (_package._table[i].weight + 1)){
+                                                strcpy(_node._table[j].route_ip, _package._table[i].route_ip);
+                                                strcpy(_node._table[j].route_id, _package._table[i].route_id);
+                                                _node._table[j].weight = _package._table[i].weight + 1;
+                                                
+                                                j = MAX;
+                                                count = MAX;
+                                                Write (_package.send_file_name, _node);
+                                        }
+                                }
+                                j++;
+                        }
+                        while (count < MAX){
+                                if (_node.node_region == _package._table[i].region
+                                                || _package._table[i].region == 99){
+                                        if (strcmp(_node._table[count].destiny_id, "0") == 0){
+                                                strcpy(_node._table[count].destiny_id, _package._table[i].destiny_id);
+                                                strcpy(_node._table[count].destiny, _package._table[i].destiny);
+                                                strcpy(_node._table[count].route_ip, _package.node_ip);
+                                                strcpy(_node._table[count].route_id, _package.node_id);
+                                                _node._table[count].weight = _package._table[i].weight + 1;
+                                                _node._table[count].region = _package._table[i].region;
+                                                
+                                                count = MAX;
+                                                Write (_package.send_file_name, _node);
+                                        } 
+                                }
+                                count++;
+                        }
+                        
+                }
+                i++;
+        }
+
+//        Write(_package.send_file_name, _package);
 
 //        Node _aux = Read(_package.send_file_name); 
         /* Instancia um novo Node chamado _aux e passa por parâmetro
