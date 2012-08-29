@@ -50,8 +50,9 @@ int main( int argc, char *argv[])
         
         _arg = Read(file_name); /* Lê o arquivo LOCAL                                 */
         int i = 0;
-        while (!strcmp(_arg._table[i].destiny_id, "0") ){
+        while (strcmp(_arg._table[i].destiny_id, "0") != 0){
 
+                printf("DEBUG");
                 strcpy (send_file_name, _arg._table[i].destiny_id);
                 strcat (send_file_name, _arg._table[i].destiny);
                 
@@ -156,6 +157,7 @@ Node Read (char file_name[]){
         printf("\n");
 
         fclose(file);
+        return _node;
 }
 
 /*
@@ -180,63 +182,7 @@ void Write (char file_name[], Node _node)
         fwrite(&_node.node_region,   sizeof(int),   1, file);
         fwrite(_node.send_file_name, sizeof(char), 17, file);
         
-        while (check != 0) {                                   /* While para o usuário entrar com os dados dos seus Adjacentes */
-                printf("\ndestiny: ");
-                scanf (" %s", _node._table[i].destiny);
-                getchar();
-
-                printf("\ndestiny_id: ");
-                scanf ("%s", _node._table[i].destiny_id);
-                getchar();
-
-                printf("\nroute_ip: ");
-                scanf(" %s", _node._table[i].route_ip);
-                getchar();
-
-                printf("\nroute_ID: ");
-                scanf ("%s", _node._table[i].route_id);
-                getchar();
-
-                printf("\nweight: ");
-                scanf(" %d", &_node._table[i].weight);
-                getchar();
-
-                printf("\nregion: ");
-                scanf(" %d", &_node._table[i].region);
-                getchar();
-                
-                _node._table[i].last_update = 0;
-                _node._table[i].time_out = 0;
-
-                fwrite( _node._table[i].destiny,     sizeof(char), 15, file);
-                fwrite( _node._table[i].destiny_id,  sizeof(char),  2, file);
-                fwrite( _node._table[i].route_ip,    sizeof(char), 15, file);
-                fwrite( _node._table[i].route_id,    sizeof(char),  2, file);
-                fwrite(&_node._table[i].weight,      sizeof(int),   1, file);
-                fwrite(&_node._table[i].region,      sizeof(int),   1, file);
-                fwrite(&_node._table[i].last_update, sizeof(int),   1, file);
-                fwrite(&_node._table[i].time_out,    sizeof(int),   1, file);
-
-                i++;
-
-                if (i > MAX) {        /* Somente para verificar se o número */
-                        check = 0;    /* de entradas não irá exceder o MAX de entradas da tabela */
-                } else {
-                        printf("press 0 to quit");
-                        scanf ("%d", &check);
-                }
-        }
-
         while (i < MAX){
-                strcpy(_node._table[i].destiny, "0");
-                strcpy(_node._table[i].destiny_id, "0");
-                strcpy(_node._table[i].route_ip, "0");
-                strcpy(_node._table[i].route_id, "0");
-                _node._table[i].weight = 0;
-                _node._table[i].region = 0;
-                _node._table[i].last_update = 0;
-                _node._table[i].time_out = 0;
-
                 fwrite(_node._table[i].destiny,     sizeof(char), 15, file);
                 fwrite( _node._table[i].destiny_id,  sizeof(char),  2, file);
                 fwrite( _node._table[i].route_ip,    sizeof(char), 15, file);
