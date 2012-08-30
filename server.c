@@ -37,10 +37,10 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
              return (&_package);
         }
 
-        i = 0;
-        int tempo_atual = time(NULL);
-        while (i < MAX){
+        i = 18;
+//        while (i < MAX){
                 if(strcmp(_node._table[i].destiny_id, "0") != 0){
+                        int tempo_atual = time(NULL);
                         if(tempo_atual - _node._table[i].last_update > 25){
                                 strcpy(_node._table[i].destiny, "0");
                                 strcpy(_node._table[i].destiny_id, "0");
@@ -53,7 +53,9 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
 
                         }
                 }
-        }
+                i++;
+//        }
+
         i = 0;
         j = 0;
         count = 0;
@@ -74,6 +76,7 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                                                 j = MAX;
                                                 count = MAX;
                                                 Write (_package.send_file_name, _node);
+                                                _node = Read(_package.send_file_name);
                                         }
                                         else {
                                                 j = MAX;
@@ -106,6 +109,7 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                                                 
                                                 count = MAX;
                                                 Write (_package.send_file_name , _node);
+                                                _node = Read(_package.send_file_name);
                                         } 
                                 }
                                 count++;

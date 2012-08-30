@@ -61,6 +61,7 @@ int main( int argc, char *argv[])
 
         /* Procura Adjacentes que não são da mesma Região, para inserí-los na tabela como Regiões */
         while (strcmp(_arg._table[i].destiny, "0") != 0){    /* Enquanto o IP do adjacente i não for 0 */
+                _arg._table[i].last_update = time(NULL);
 
                 /* Se o Adjacente tiver a região diferente do Arquivo LOCAL e o mesmo não é uma Região entra no IF  */
                 if(_arg.node_region != _arg._table[i].region && _arg._table[i].region != 99){
@@ -80,6 +81,7 @@ int main( int argc, char *argv[])
                                                 strcpy(_arg._table[count].route_id, _arg._table[i].route_id);
                                                 _arg._table[count].weight = _arg._table[i].weight;
 
+                                                _arg._table[count].last_update = time(NULL);
                                                 count = MAX;
                                                 j = MAX; 
 
@@ -106,6 +108,7 @@ int main( int argc, char *argv[])
                                         strcpy(_arg._table[j].route_id  , _arg._table[i].route_id);
                                         _arg._table[j].weight = _arg._table[i].weight;
                                         _arg._table[j].region = 99;
+                                        _arg._table[j].last_update = time(NULL);
 
                                         j = MAX;
                                         Write(file_name, _arg);
@@ -116,11 +119,9 @@ int main( int argc, char *argv[])
                 }
                 i++;
         }
+
         i = 0;
         clock_t temp;
-
-
-        
         while (1){
                 temp = clock() + CLOCKS_PER_SEC * 10;
                 while (clock() < temp){}
