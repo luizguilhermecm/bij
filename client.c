@@ -62,7 +62,9 @@ int main( int argc, char *argv[])
         /* Procura Adjacentes que não são da mesma Região, para inserí-los na tabela como Regiões */
         while (strcmp(_arg._table[i].destiny, "0") != 0){    /* Enquanto o IP do adjacente i não for 0 */
                 _arg._table[i].last_update = time(NULL);
-
+                
+                Write(file_name, _arg);
+                _arg = Read(file_name);
                 /* Se o Adjacente tiver a região diferente do Arquivo LOCAL e o mesmo não é uma Região entra no IF  */
                 if(_arg.node_region != _arg._table[i].region && _arg._table[i].region != 99){
                         id_region[0] = 'r';
