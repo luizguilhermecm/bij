@@ -72,8 +72,8 @@ int main( int argc, char *argv[])
 
                         while (count < MAX){
                                 /* Se já constar um registro na tabela de Adjacências entra no IF
-                                   e compara se o Peso do caminho na Tabela LOCAL é MAIOR, se for MAIOR
-                                   ele é substituído pelo da Tabela recebida */
+                                 * e compara se o Peso do caminho na Tabela LOCAL é MAIOR, se for MAIOR
+                                 * ele é substituído pelo da Tabela recebida */
                                 if (strcmp(_arg._table[count].destiny_id, id_region) == 0){
                                         if (_arg._table[count].weight > _arg._table[i].weight){
                                                 strcpy(_arg._table[count].route_ip, _arg._table[i].route_ip);
@@ -119,7 +119,7 @@ int main( int argc, char *argv[])
         i = 0;
         clock_t temp;
 
-        int test_Clock = 0;
+
         
         while (1){
                 temp = clock() + CLOCKS_PER_SEC * 10;
@@ -128,7 +128,6 @@ int main( int argc, char *argv[])
                 while (strcmp(_arg._table[i].destiny_id, "0") != 0
                                 && _arg._table[i].region != 99){
 
-                        printf("\n\n INTERATION: %d\n\n", test_Clock);
                         strcpy (send_file_name, _arg._table[i].destiny_id);
                         strcat (send_file_name, _arg._table[i].destiny);
 
@@ -145,7 +144,6 @@ int main( int argc, char *argv[])
                                 //TODO: what we gonna do here?
                         }
                         i++;
-                        test_Clock++;
                 }
                 i = 0;
         }

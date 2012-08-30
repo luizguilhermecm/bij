@@ -16,7 +16,10 @@
 Node Read (char file_name[]);
 void Write (char file_name[], Node _node);
 
-/* implementação da função add */
+/* Variáveis Globais */
+int test_Clock = 0;
+
+/* implementação da função Router do Servidor */
 Node * router_1_svc (Node * argp, struct svc_req *rqstp)
 {
         int i,j,count;
@@ -24,9 +27,9 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
         static Node _package;
         Node _node;
         _package = *argp;     /* _package recebe o conteúdo do ponteiro passado por parâmetro
-                                  contendo o arquivo que deverá ser comparado com o arquivo LOCAL
-                                  e o mesmo deverá ser atualizado caso algum nó adjacente for desconectado
-                                  ou uma nova rota for descoberta ou uma rota de menor custo for encontrada. */
+                               *  contendo o arquivo que deverá ser comparado com o arquivo LOCAL
+                               *  e o mesmo deverá ser atualizado caso algum nó adjacente for desconectado
+                               *  ou uma nova rota for descoberta ou uma rota de menor custo for encontrada. */
         
         _node = Read(_package.send_file_name);
         if (strcmp(_node.send_file_name, "NULL") == 0){
@@ -47,6 +50,8 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                                                 strcpy(_node._table[j].route_ip , _package.node_ip);
                                                 strcpy(_node._table[j].route_id , _package.node_id);
                                                 _node._table[j].weight = _package._table[i].weight + 1;
+
+                                                //_node._table[i].last_update = clock()/CLOCKS_PER_SEC; // Added by Breno
                                                 
                                                 j = MAX;
                                                 count = MAX;
@@ -77,6 +82,8 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                                                 strcpy(_node._table[count].route_id   , _package.node_id);
                                                 _node._table[count].weight = _package._table[i].weight + 1;
                                                 _node._table[count].region = _package._table[i].region;
+
+                                                //_node._table[i].last_update = clock()/CLOCKS_PER_SEC; // Added by Breno
                                                 
                                                 count = MAX;
                                                 Write (_package.send_file_name , _node);
@@ -115,7 +122,8 @@ Node Read (char file_name[]){
         fread(&_node.node_region,    sizeof(int),   1, file);
         fread( _node.send_file_name, sizeof(char), 18, file);
 
-        //TODO: colocar numero da linha
+        
+        printf("\n\n ( Read() Server ) Function Call Number: %d\n\n", test_Clock);
         
         printf("+-------------------------------------------------------------------+");
         printf("\n");
@@ -166,6 +174,9 @@ Node Read (char file_name[]){
         printf("\n");
 
         fclose(file);
+
+        test_Clock++;
+        
         return _node;
 }
 
@@ -192,6 +203,12 @@ void Write (char file_name[], Node _node)
         fwrite(_node.send_file_name, sizeof(char), 18, file);
  
         while (i < MAX){
+                
+                _node._table[i].time_out = time(NULL) - _node._table[i].last_update;
+                _node._table[i].time_out = _node._table[i].time_out - _node._table[i].last_update;
+
+                _node._table[i].last_update = time(NULL);
+                
                 fwrite(_node._table[i].destiny,      sizeof(char), 16, file);
                 fwrite( _node._table[i].destiny_id,  sizeof(char),  3, file);
                 fwrite( _node._table[i].route_ip,    sizeof(char), 16, file);

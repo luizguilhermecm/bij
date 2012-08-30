@@ -58,7 +58,7 @@ void Generator (Node _node)
 
         /* Escreve as informações do nó. Nome do arquivo, id, IP e a região a qual ele pertence */
         fwrite(_node.node_file,      sizeof(char), 18, file);
-        fwrite(_node.node_id,       sizeof(char),  3, file);
+        fwrite(_node.node_id,        sizeof(char),  3, file);
         fwrite(_node.node_ip,        sizeof(char), 16, file);
         fwrite(&_node.node_region,   sizeof(int),   1, file);
         fwrite(_node.send_file_name, sizeof(char), 18, file);
@@ -121,7 +121,7 @@ void Generator (Node _node)
                 _node._table[i].last_update = 0;
                 _node._table[i].time_out = 0;
 
-                fwrite(_node._table[i].destiny,     sizeof(char), 16, file);
+                fwrite(_node._table[i].destiny,      sizeof(char), 16, file);
                 fwrite( _node._table[i].destiny_id,  sizeof(char),  3, file);
                 fwrite( _node._table[i].route_ip,    sizeof(char), 16, file);
                 fwrite( _node._table[i].route_id,    sizeof(char),  3, file);
@@ -175,9 +175,9 @@ void View (Node _node)
         while (i < MAX){
 
                 fread( _node._table[i].destiny,     sizeof(char), 16, file);
-                fread(_node._table[i].destiny_id,  sizeof(char),  3, file);
+                fread(_node._table[i].destiny_id,   sizeof(char),  3, file);
                 fread( _node._table[i].route_ip,    sizeof(char), 16, file);
-                fread(_node._table[i].route_id,    sizeof(char),  3, file);
+                fread(_node._table[i].route_id,     sizeof(char),  3, file);
                 fread(&_node._table[i].weight,      sizeof(int),   1, file);
                 fread(&_node._table[i].region,      sizeof(int),   1, file);
                 fread(&_node._table[i].last_update, sizeof(int),   1, file);
@@ -187,14 +187,14 @@ void View (Node _node)
                 printf("\n");
                 printf("|%3d", i);
                 printf("|%18s", _node._table[i].destiny);
-                printf("|%3s", _node._table[i].destiny_id); 
+                printf("|%3s",  _node._table[i].destiny_id); 
                 printf("|%18s", _node._table[i].route_ip);
-                printf("|%3s", _node._table[i].route_id);
+                printf("|%3s",  _node._table[i].route_id);
                 
-                printf("|%3d",    _node._table[i].weight);
-                printf("|%3d",      _node._table[i].region);
-                printf("|%4d", _node._table[i].last_update);
-                printf("|%4d|",    _node._table[i].time_out);
+                printf("|%3d",  _node._table[i].weight);
+                printf("|%3d",  _node._table[i].region);
+                printf("|%4d",  _node._table[i].last_update);
+                printf("|%4d|", _node._table[i].time_out);
                 printf("\n");
                 i++;
         }
