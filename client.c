@@ -47,7 +47,7 @@ int main( int argc, char *argv[])
         Node _arg;          /* Armazenará o conteúdo do arquivo do servidor local             */
         Node _erro;
         int i,j,count;
-        char id_region[3];
+        char id_region[2];
         
         char send_file_name[17];      /* Nome do arquivo que será aberto no SERVIDOR REMOTO */
         char file_name [17];          /* Nome do arquivo LOCAL                              */
@@ -218,7 +218,7 @@ Node Read (char file_name[]){
         while (i < MAX){
 
                 fread( _node._table[i].destiny,     sizeof(char), 16, file);
-                fread( _node._table[i].destiny_id,  sizeof(char),  3, file);
+                fread( _node._table[i].destiny_id,  sizeof(char),  5, file);
                 fread( _node._table[i].route_ip,    sizeof(char), 16, file);
                 fread( _node._table[i].route_id,    sizeof(char),  3, file);
                 fread(&_node._table[i].weight,      sizeof(int),   1, file);
@@ -230,7 +230,7 @@ Node Read (char file_name[]){
                 printf("\n");
                 printf("|%3d",  i);
                 printf("|%18s", _node._table[i].destiny);
-                printf("|%3s",  _node._table[i].destiny_id); 
+                printf("|%5s",  _node._table[i].destiny_id); 
                 printf("|%18s", _node._table[i].route_ip);
                 printf("|%3s",  _node._table[i].route_id);
                 
@@ -274,7 +274,7 @@ void Write (char file_name[], Node _node)
  
         while (i < MAX){
                 fwrite(_node._table[i].destiny,      sizeof(char), 16, file);
-                fwrite( _node._table[i].destiny_id,  sizeof(char),  3, file);
+                fwrite( _node._table[i].destiny_id,  sizeof(char),  5, file);
                 fwrite( _node._table[i].route_ip,    sizeof(char), 16, file);
                 fwrite( _node._table[i].route_id,    sizeof(char),  3, file);
                 fwrite(&_node._table[i].weight,      sizeof(int),   1, file);

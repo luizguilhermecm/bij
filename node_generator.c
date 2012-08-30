@@ -18,7 +18,7 @@
 typedef struct Adjacent 
 {
         char destiny[16];  /* IP do Destinatário Exemplo: 192.90.30.211                                         */
-        char destiny_id[3];   /* ID do Destinatário Exemplo: y #TODO: if destiny_id was a region it needs be fixed.*/
+        char destiny_id[5];   /* ID do Destinatário Exemplo: y #TODO: if destiny_id was a region it needs be fixed.*/
         char route_ip[16]; /* IP do Adjacente    Exemplo: 192.90.30.221                                         */
         char route_id[3];     /* ID do Adjacente    Exemplo: x                                                     */
         int  weight;       /* Custo do caminho   Exemplo: Nó <-> x                                              */
@@ -92,7 +92,7 @@ void Generator (Node _node)
                 _node._table[i].time_out = 0;
 
                 fwrite( _node._table[i].destiny,     sizeof(char), 16, file);
-                fwrite( _node._table[i].destiny_id,  sizeof(char),  3, file);
+                fwrite( _node._table[i].destiny_id,  sizeof(char),  5, file);
                 fwrite( _node._table[i].route_ip,    sizeof(char), 16, file);
                 fwrite( _node._table[i].route_id,    sizeof(char),  3, file);
                 fwrite(&_node._table[i].weight,      sizeof(int),   1, file);
@@ -122,7 +122,7 @@ void Generator (Node _node)
                 _node._table[i].time_out = 0;
 
                 fwrite(_node._table[i].destiny,      sizeof(char), 16, file);
-                fwrite( _node._table[i].destiny_id,  sizeof(char),  3, file);
+                fwrite( _node._table[i].destiny_id,  sizeof(char),  5, file);
                 fwrite( _node._table[i].route_ip,    sizeof(char), 16, file);
                 fwrite( _node._table[i].route_id,    sizeof(char),  3, file);
                 fwrite(&_node._table[i].weight,      sizeof(int),   1, file);
@@ -175,7 +175,7 @@ void View (Node _node)
         while (i < MAX){
 
                 fread( _node._table[i].destiny,     sizeof(char), 16, file);
-                fread(_node._table[i].destiny_id,   sizeof(char),  3, file);
+                fread(_node._table[i].destiny_id,   sizeof(char),  5, file);
                 fread( _node._table[i].route_ip,    sizeof(char), 16, file);
                 fread(_node._table[i].route_id,     sizeof(char),  3, file);
                 fread(&_node._table[i].weight,      sizeof(int),   1, file);
@@ -187,7 +187,7 @@ void View (Node _node)
                 printf("\n");
                 printf("|%3d", i);
                 printf("|%18s", _node._table[i].destiny);
-                printf("|%3s",  _node._table[i].destiny_id); 
+                printf("|%5s",  _node._table[i].destiny_id); 
                 printf("|%18s", _node._table[i].route_ip);
                 printf("|%3s",  _node._table[i].route_id);
                 

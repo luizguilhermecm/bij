@@ -6,7 +6,7 @@
 struct Adjacent 
 {
         char destiny[16];
-        char destiny_id[3]; /* if destiny_id was a region it needs be fixed.*/
+        char destiny_id[5]; /* if destiny_id was a region it needs be fixed.*/
         char route_ip[16];
         char route_id[3];
         int  weight;
