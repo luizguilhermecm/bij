@@ -44,8 +44,8 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                                 if(strcmp(_node._table[j].destiny_id, _package._table[i].destiny_id) == 0){
                                         if(_node._table[j].weight > (_package._table[i].weight + 1) ){
 
-                                                strcpy(_node._table[j].route_ip, _package.node_ip);
-                                                strcpy(_node._table[j].route_id, _package.node_id);
+                                                strcpy(_node._table[j].route_ip , _package.node_ip);
+                                                strcpy(_node._table[j].route_id , _package.node_id);
                                                 _node._table[j].weight = _package._table[i].weight + 1;
                                                 
                                                 j = MAX;
@@ -71,15 +71,15 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                                         if (strcmp(_node._table[count].destiny_id, "0") == 0 
                                                         && strcmp(_package._table[i].destiny_id, id_region) != 0 ){
 
-                                                strcpy(_node._table[count].destiny_id, _package._table[i].destiny_id);
-                                                strcpy(_node._table[count].destiny, _package._table[i].destiny);
-                                                strcpy(_node._table[count].route_ip, _package.node_ip);
-                                                strcpy(_node._table[count].route_id, _package.node_id);
+                                                strcpy(_node._table[count].destiny_id , _package._table[i].destiny_id);
+                                                strcpy(_node._table[count].destiny    , _package._table[i].destiny);
+                                                strcpy(_node._table[count].route_ip   , _package.node_ip);
+                                                strcpy(_node._table[count].route_id   , _package.node_id);
                                                 _node._table[count].weight = _package._table[i].weight + 1;
                                                 _node._table[count].region = _package._table[i].region;
                                                 
                                                 count = MAX;
-                                                Write (_package.send_file_name, _node);
+                                                Write (_package.send_file_name , _node);
                                         } 
                                 }
                                 count++;
@@ -139,9 +139,9 @@ Node Read (char file_name[]){
         while (i < MAX){
 
                 fread( _node._table[i].destiny,     sizeof(char), 16, file);
-                fread(_node._table[i].destiny_id,  sizeof(char),  3, file);
+                fread(_node._table[i].destiny_id,   sizeof(char),  3, file);
                 fread( _node._table[i].route_ip,    sizeof(char), 16, file);
-                fread(_node._table[i].route_id,    sizeof(char),  3, file);
+                fread(_node._table[i].route_id,     sizeof(char),  3, file);
                 fread(&_node._table[i].weight,      sizeof(int),   1, file);
                 fread(&_node._table[i].region,      sizeof(int),   1, file);
                 fread(&_node._table[i].last_update, sizeof(int),   1, file);
@@ -149,16 +149,16 @@ Node Read (char file_name[]){
 
                 printf("+---+------------------+---+------------------+---+---+---+----+----+");
                 printf("\n");
-                printf("|%3d", i);
+                printf("|%3d" , i);
                 printf("|%18s", _node._table[i].destiny);
-                printf("|%3s", _node._table[i].destiny_id); 
+                printf("|%3s" , _node._table[i].destiny_id); 
                 printf("|%18s", _node._table[i].route_ip);
-                printf("|%3s", _node._table[i].route_id);
+                printf("|%3s" , _node._table[i].route_id);
                 
-                printf("|%3d",    _node._table[i].weight);
-                printf("|%3d",      _node._table[i].region);
-                printf("|%4d", _node._table[i].last_update);
-                printf("|%4d|",    _node._table[i].time_out);
+                printf("|%3d",  _node._table[i].weight);
+                printf("|%3d",  _node._table[i].region);
+                printf("|%4d",  _node._table[i].last_update);
+                printf("|%4d|", _node._table[i].time_out);
                 printf("\n");
                 i++;
         }
@@ -186,13 +186,13 @@ void Write (char file_name[], Node _node)
 
         /* Escreve as informações do nó. Nome do arquivo, id, IP e a região a qual ele pertence */
         fwrite(_node.node_file,      sizeof(char), 18, file);
-        fwrite(_node.node_id,       sizeof(char),  3, file);
+        fwrite(_node.node_id,        sizeof(char),  3, file);
         fwrite(_node.node_ip,        sizeof(char), 16, file);
         fwrite(&_node.node_region,   sizeof(int),   1, file);
         fwrite(_node.send_file_name, sizeof(char), 18, file);
  
         while (i < MAX){
-                fwrite(_node._table[i].destiny,     sizeof(char), 16, file);
+                fwrite(_node._table[i].destiny,      sizeof(char), 16, file);
                 fwrite( _node._table[i].destiny_id,  sizeof(char),  3, file);
                 fwrite( _node._table[i].route_ip,    sizeof(char), 16, file);
                 fwrite( _node._table[i].route_id,    sizeof(char),  3, file);
