@@ -36,6 +36,24 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
              strcpy(_package.send_file_name, _node.send_file_name);
              return (&_package);
         }
+
+        i = 0;
+        int tempo_atual = time(NULL);
+        while (i < MAX){
+                if(strcmp(_node._table[i].destiny_id, "0") != 0){
+                        if(tempo_atual - _node._table[i].last_update > 25){
+                                strcpy(_node._table[i].destiny, "0");
+                                strcpy(_node._table[i].destiny_id, "0");
+                                strcpy(_node._table[i].route_ip, "0");
+                                strcpy(_node._table[i].route_id, "0");
+                                _node._table[i].weight = 0;
+                                _node._table[i].region = 0;
+                                _node._table[i].last_update = 0;
+                                _node._table[i].time_out = 0;
+
+                        }
+                }
+        }
         i = 0;
         j = 0;
         count = 0;
@@ -44,9 +62,9 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                 count = 0;
                 if(strcmp(_package._table[i].destiny_id, "0") != 0){
                         while (j < MAX){
-                                if(strcmp(_node._table[j].destiny_id, _package._table[i].destiny_id) == 0){
+                                if(strcmp(_node._table[j].destiny_id, _package._table[i].destiny_id) == 0){ //se rota já existe
+                                        _node._table[j].last_update = time(NULL);
                                         if(_node._table[j].weight > (_package._table[i].weight + 1) ){
-
                                                 strcpy(_node._table[j].route_ip , _package.node_ip);
                                                 strcpy(_node._table[j].route_id , _package.node_id);
                                                 _node._table[j].weight = _package._table[i].weight + 1;
@@ -72,7 +90,7 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
 
                                         id_region[0] = 'r';
                                         id_region[1] = (char)(((int)'0')+_node.node_region);
-                                        
+
                                         if (strcmp(_node._table[count].destiny_id, "0") == 0 
                                                         && strcmp(_package._table[i].destiny_id, id_region) != 0 ){
 
@@ -82,6 +100,7 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                                                 strcpy(_node._table[count].route_id   , _package.node_id);
                                                 _node._table[count].weight = _package._table[i].weight + 1;
                                                 _node._table[count].region = _package._table[i].region;
+                                                _node._table[count].last_update = time(NULL);
 
                                                 //_node._table[i].last_update = clock()/CLOCKS_PER_SEC; // Added by Breno
                                                 
@@ -203,11 +222,6 @@ void Write (char file_name[], Node _node)
         fwrite(_node.send_file_name, sizeof(char), 18, file);
  
         while (i < MAX){
-                
-                _node._table[i].time_out = time(NULL) - _node._table[i].last_update;
-                _node._table[i].time_out = _node._table[i].time_out - _node._table[i].last_update;
-
-                _node._table[i].last_update = time(NULL);
                 
                 fwrite(_node._table[i].destiny,      sizeof(char), 16, file);
                 fwrite( _node._table[i].destiny_id,  sizeof(char),  3, file);
