@@ -112,6 +112,7 @@ int main( int argc, char *argv[])
                                         _arg._table[j].weight = _arg._table[i].weight;
                                         _arg._table[j].region = 99;
                                         _arg._table[j].last_update = time(NULL);
+                                        _arg._table[j].time_out = 0;
 
                                         j = MAX;
                                         Write(file_name, _arg);
@@ -123,15 +124,25 @@ int main( int argc, char *argv[])
                 i++;
         }
 
+        for (j = 0; j < MAX; j++){
+                if (strcmp(_arg._table[j].destiny_id, "0") != 0
+                                && _arg._table[j].region != 99){
+
+                        _arg._table[j].time_out = 1;
+                }
+        }
+        Write(file_name, _arg);
+        _arg = Read(file_name);
+
         i = 0;
         clock_t temp;
         while (1){
                 temp = clock() + CLOCKS_PER_SEC * 5;
                 while (clock() < temp){}
-
                 _arg = Read(file_name);
                 while (strcmp(_arg._table[i].destiny_id, "0") != 0
-                                && _arg._table[i].region != 99){
+                                && _arg._table[i].region != 99 
+                                && _arg._table[i].time_out == 1){
 
                         
                         strcpy (send_file_name, _arg._table[i].destiny_id);

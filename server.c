@@ -69,14 +69,17 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
 
                                 if (strcmp(_node._table[j].destiny_id, _package._table[i].destiny_id) == 0){ //verifica se mesmo destino
                                         int all_weight = _package._table[i].weight + WeightFor(_node, _package.node_id); //recebe o peso que tinha + distancia entre nos
+//                                        
+                                        _node._table[j].last_update = all_weight;
+                                        Write (_package.send_file_name, _node);
+                                        _node = Read(_package.send_file_name);
+//
                                         if (_node._table[j].weight > all_weight){ //veririca se meu peso eh maior
-                                                strcpy(_node._table[j].route_id, _package._table[i].route_id); // coloco nova rota sendo pelo proprio _package
-                                                strcpy(_node._table[j].route_ip, _package._table[i].route_ip);
+                                                strcpy(_node._table[j].route_id, _package.node_id); // coloco nova rota sendo pelo proprio _package
+                                                strcpy(_node._table[j].route_ip, _package.node_ip);
                                                 _node._table[j].weight = all_weight;
                                                 //FIX: quando recebe tabela do adjacente a rota fica errada
-//                                                
-                                                _node._table[j].time_out++;
-//
+
                                                 Write (_package.send_file_name, _node);
                                                 _node = Read(_package.send_file_name);
                                         }
@@ -92,6 +95,7 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                                         strcpy(_node._table[j].route_ip, _package.node_ip);
                                         _node._table[j].weight = _package._table[i].weight + WeightFor(_node, _package.node_id);
                                         _node._table[j].region = _package._table[i].region;
+                                        _package._table[i].time_out = 0;
 
                                         Write (_package.send_file_name, _node);
                                         _node = Read(_package.send_file_name);
