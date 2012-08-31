@@ -59,6 +59,7 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
         Write (_package.send_file_name, _node);
         _node = Read(_package.send_file_name);
 */
+        int int_region;
         //_node [j] -> minha tabela
         //_package [i] -> tabela recebida
         for (i = 0; i < MAX; i++){ // percorre a tabela recebida
@@ -67,22 +68,24 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                         if (_package._table[i].region == _node.node_region         // entra apenas se mesma regiao ou rota de regiao 
                                 || _package._table[i].region == 99){      //ou seja, elimina inuteis
 
+                                id_region[0] = 'r';
+                                id_region[1] = (char)(((int)'0')+_node.node_region);
+
+                                int_region = atoi(&_package._table[j].destiny_id[1]);
+
                                 if (strcmp(_node._table[j].destiny_id, _package._table[i].destiny_id) == 0){ //verifica se mesmo destino
                                         int all_weight = _package._table[i].weight + WeightFor(_node, _package.node_id); //recebe o peso que tinha + distancia entre nos
-//                                        
-                                        _node._table[j].last_update = all_weight;
-                                        Write (_package.send_file_name, _node);
-                                        _node = Read(_package.send_file_name);
-//
                                         if (_node._table[j].weight > all_weight){ //veririca se meu peso eh maior
                                                 strcpy(_node._table[j].route_id, _package.node_id); // coloco nova rota sendo pelo proprio _package
                                                 strcpy(_node._table[j].route_ip, _package.node_ip);
                                                 _node._table[j].weight = all_weight;
-                                                //FIX: quando recebe tabela do adjacente a rota fica errada
 
                                                 Write (_package.send_file_name, _node);
                                                 _node = Read(_package.send_file_name);
                                         }
+                                        break;
+                                }
+                                else if (int_region == _node.node_region){
                                         break;
                                 }
                                 else if (strcmp(_node.node_id, _package._table[i].destiny_id) == 0){
