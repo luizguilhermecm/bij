@@ -13,6 +13,7 @@
 
 #define MAX 20
 
+Node Print (char file_name[]);
 Node Read      (char file_name[]);
 void Write     (char file_name[], Node _node);
 void Erro ();
@@ -125,17 +126,20 @@ int main( int argc, char *argv[])
         i = 0;
         clock_t temp;
         while (1){
-                temp = clock() + CLOCKS_PER_SEC * 10;
+                temp = clock() + CLOCKS_PER_SEC * 5;
                 while (clock() < temp){}
 
+                _arg = Read(file_name);
                 while (strcmp(_arg._table[i].destiny_id, "0") != 0
                                 && _arg._table[i].region != 99){
 
+                        
                         strcpy (send_file_name, _arg._table[i].destiny_id);
                         strcat (send_file_name, _arg._table[i].destiny);
 
                         strcpy (_arg.send_file_name, send_file_name);
 
+                        printf("Sending table to %s\n", send_file_name);
                         // Primeiro parâmetro é o IP do Destino
                         _adjacent = clnt_create (_arg._table[i].destiny, BIJ_PROG, BIJ_VERSION, "udp"); 
 
@@ -173,13 +177,7 @@ int main( int argc, char *argv[])
         return 0;
 } 
 
-
-/*
-**  Função: Read
-**  Descrição: Recebe como parâmetro o nome do arquivo que deverá ser lido ( Arquivo LOCAL )
-**             E o Nó que armazenará as informações lidas pela função e depois será retornado.     
-*/
-Node Read (char file_name[]){
+Node Print (char file_name[]){
 
         Node _node;
         int i = 0;
@@ -246,6 +244,48 @@ Node Read (char file_name[]){
         }
         printf("+---+------------------+---+------------------+---+---+---+----+----+");
         printf("\n");
+
+        fclose(file);
+        return _node;
+}
+
+
+/*
+**  Função: Read
+**  Descrição: Recebe como parâmetro o nome do arquivo que deverá ser lido ( Arquivo LOCAL )
+**             E o Nó que armazenará as informações lidas pela função e depois será retornado.     
+*/
+Node Read (char file_name[]){
+
+        Node _node;
+        int i = 0;
+
+        FILE *file = fopen(file_name, "r");
+        
+        if (file == NULL) {
+                printf("\nArquivo não encontrado\n");
+                exit(EXIT_FAILURE);
+        }
+
+        fread( _node.node_file,      sizeof(char), 18, file);
+        fread( _node.node_id,        sizeof(char),  3, file);
+        fread( _node.node_ip,        sizeof(char), 16, file);
+        fread(&_node.node_region,    sizeof(int),   1, file);
+        fread( _node.send_file_name, sizeof(char), 18, file);
+
+        while (i < MAX){
+
+                fread( _node._table[i].destiny,     sizeof(char), 16, file);
+                fread( _node._table[i].destiny_id,  sizeof(char),  5, file);
+                fread( _node._table[i].route_ip,    sizeof(char), 16, file);
+                fread( _node._table[i].route_id,    sizeof(char),  3, file);
+                fread(&_node._table[i].weight,      sizeof(int),   1, file);
+                fread(&_node._table[i].region,      sizeof(int),   1, file);
+                fread(&_node._table[i].last_update, sizeof(int),   1, file);
+                fread(&_node._table[i].time_out,    sizeof(int),   1, file);
+
+               i++;
+        }
 
         fclose(file);
         return _node;
