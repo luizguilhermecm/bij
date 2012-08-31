@@ -59,6 +59,23 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
         Write (_package.send_file_name, _node);
         _node = Read(_package.send_file_name);
 */
+        _node = Read(_package.send_file_name);
+        int now;
+        for (j = 0; j < MAX; j++){
+                now = time(NULL);
+                if (now - _node._table[j].last_update > 100){
+                        strcpy(_node._table[j].destiny_id, "0");
+                        strcpy(_node._table[j].destiny, "0");
+                        strcpy(_node._table[j].route_id, "0");
+                        strcpy(_node._table[j].route_ip, "0");
+                        _node._table[j].weight = 0;
+                        _node._table[j].region = 0;
+                        _node._table[j].time_out = 0;
+                }
+        }
+        Write(_package.send_file_name, _node);
+        _node = Read(_package.send_file_name);
+
         int int_region;
         //_node [j] -> minha tabela
         //_package [i] -> tabela recebida
