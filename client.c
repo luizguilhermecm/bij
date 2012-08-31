@@ -206,54 +206,52 @@ Node Print (char file_name[]){
         fread(&_node.node_region,    sizeof(int),   1, file);
         fread( _node.send_file_name, sizeof(char), 18, file);
 
-        //TODO: colocar numero da linha
-        
-        printf("+-------------------------------------------------------------------+");
+        printf("+----------------------------------------------------------------------------+");
         printf("\n");
-        printf("|File:%18s                                            |", _node.node_file);
+        printf("|File:%18s                                                     |", _node.node_file);
         printf("\n");
-        printf("|ID:%3s                                                             |", _node.node_id);
+        printf("|ID:%3s                                                                      |", _node.node_id);
         printf("\n");
-        printf("|IP:%18s                                              |", _node.node_ip);
+        printf("|IP:%18s                                                       |", _node.node_ip);
         printf("\n");
-        printf("|Regiao:%3d                                                         |", _node.node_region);
+        printf("|Regiao:%3d                                                                  |", _node.node_region);
         printf("\n");
-        printf("+-------------------------------------------------------------------+");
+        printf("+----------------------------------------------------------------------------+");
         printf("\n");
-        printf("+---+------------------+---+------------------+---+---+---+----+----+");
+        printf("+---+------------------+----+------------------+---+---+---+------------+----+");
         printf("\n");
-        printf("|n  |IP Destino        |IDD| IP da Rota       |IDR|Pes|Reg|Last|Out |");
+        printf("|n  |IP Destino        |IDD | IP da Rota       |IDR|Pes|Reg|Last        |Out |");
         printf("\n");
-        printf("+---+------------------+---+------------------+---+---+---+----+----+");
+        printf("+---+------------------+----+------------------+---+---+---+------------+----+");
         printf("\n");
 
         while (i < MAX){
 
                 fread( _node._table[i].destiny,     sizeof(char), 16, file);
-                fread( _node._table[i].destiny_id,  sizeof(char),  5, file);
+                fread(_node._table[i].destiny_id,   sizeof(char),  5, file);
                 fread( _node._table[i].route_ip,    sizeof(char), 16, file);
-                fread( _node._table[i].route_id,    sizeof(char),  3, file);
+                fread(_node._table[i].route_id,     sizeof(char),  3, file);
                 fread(&_node._table[i].weight,      sizeof(int),   1, file);
                 fread(&_node._table[i].region,      sizeof(int),   1, file);
                 fread(&_node._table[i].last_update, sizeof(int),   1, file);
                 fread(&_node._table[i].time_out,    sizeof(int),   1, file);
 
-                printf("+---+------------------+---+------------------+---+---+---+----+----+");
+                printf("+---+------------------+----+------------------+---+---+---+------------+----+");
                 printf("\n");
-                printf("|%3d",  i);
+                printf("|%3d", i);
                 printf("|%18s", _node._table[i].destiny);
-                printf("|%5s",  _node._table[i].destiny_id); 
+                printf("|%4s",  _node._table[i].destiny_id); 
                 printf("|%18s", _node._table[i].route_ip);
                 printf("|%3s",  _node._table[i].route_id);
                 
                 printf("|%3d",  _node._table[i].weight);
                 printf("|%3d",  _node._table[i].region);
-                printf("|%4d",  _node._table[i].last_update);
+                printf("|%12d",  _node._table[i].last_update);
                 printf("|%4d|", _node._table[i].time_out);
                 printf("\n");
                 i++;
         }
-        printf("+---+------------------+---+------------------+---+---+---+----+----+");
+        printf("+---+------------------+----+------------------+---+---+---+------------+----+");
         printf("\n");
 
         fclose(file);
