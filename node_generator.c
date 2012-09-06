@@ -39,8 +39,67 @@ typedef struct Node
         char   node_ip[16];           /* Conterá o IP do Nó Ex.: 192.90.30.211                             */
         int    node_region;           /* Terá a região do no a qual ele pertence                           */
         char   send_file_name[18];    /* Conterá o IP do Nó Ex.: 192.90.30.211                             */
+        char   black_list[5];
         struct Adjacent _table[MAX];  /* Vetor de estruturas do tipo Adjacent contendo os adjacentes do Nó */
 }Node;
+
+void Transform (Node _node)
+{
+        int i = 0;
+
+        FILE *file = fopen(_node.node_file, "r");
+        
+        fread( _node.node_file,      sizeof(char), 18, file);
+        fread( _node.node_id,        sizeof(char),  3, file);
+        fread( _node.node_ip,        sizeof(char), 16, file);
+        fread(&_node.node_region,    sizeof(int),   1, file);
+        fread( _node.send_file_name, sizeof(char), 18, file);
+
+        while (i < MAX){
+
+                fread( _node._table[i].destiny,     sizeof(char), 16, file);
+                fread(_node._table[i].destiny_id,   sizeof(char),  5, file);
+                fread( _node._table[i].route_ip,    sizeof(char), 16, file);
+                fread(_node._table[i].route_id,     sizeof(char),  3, file);
+                fread(&_node._table[i].weight,      sizeof(int),   1, file);
+                fread(&_node._table[i].region,      sizeof(int),   1, file);
+                fread(&_node._table[i].last_update, sizeof(int),   1, file);
+                fread(&_node._table[i].time_out,    sizeof(int),   1, file);
+
+                i++;
+        }
+
+        fclose(file);
+
+        file = fopen(_node.node_file, "w");       /* Abre o arquivo com permissão w
+                                                           Abrir um arquivo texto para gravação. 
+                                                           Se o arquivo não existir, ele será criado. 
+                                                           Se já existir, o conteúdo anterior será destruído. */
+
+        fwrite(_node.node_file,      sizeof(char), 18, file);
+        fwrite(_node.node_id,        sizeof(char),  3, file);
+        fwrite(_node.node_ip,        sizeof(char), 16, file);
+        fwrite(&_node.node_region,   sizeof(int),   1, file);
+        fwrite(_node.send_file_name, sizeof(char), 18, file);
+         
+        strcpy(_node.black_list, "bij");
+        fwrite(_node.black_list, sizeof(char), 5, file);
+ 
+        i = 0;
+        while (i < MAX){
+                fwrite(_node._table[i].destiny,      sizeof(char), 16, file);
+                fwrite( _node._table[i].destiny_id,  sizeof(char),  5, file);
+                fwrite( _node._table[i].route_ip,    sizeof(char), 16, file);
+                fwrite( _node._table[i].route_id,    sizeof(char),  3, file);
+                fwrite(&_node._table[i].weight,      sizeof(int),   1, file);
+                fwrite(&_node._table[i].region,      sizeof(int),   1, file);
+                fwrite(&_node._table[i].last_update, sizeof(int),   1, file);
+                fwrite(&_node._table[i].time_out,    sizeof(int),   1, file);
+
+                i++;
+        }
+        fclose(file);
+}
 
 /*
 **  Método:    Generator(FILE*, Node)
@@ -62,6 +121,9 @@ void Generator (Node _node)
         fwrite(_node.node_ip,        sizeof(char), 16, file);
         fwrite(&_node.node_region,   sizeof(int),   1, file);
         fwrite(_node.send_file_name, sizeof(char), 18, file);
+        
+        strcpy(_node.black_list, "bij");
+        fwrite(_node.black_list, sizeof(char), 5, file);
         
         while (check != 0) {                                   /* While para o usuário entrar com os dados dos seus Adjacentes */
                 printf("\ndestiny_IP: ");
@@ -150,6 +212,8 @@ void View (Node _node)
         fread( _node.node_ip,        sizeof(char), 16, file);
         fread(&_node.node_region,    sizeof(int),   1, file);
         fread( _node.send_file_name, sizeof(char), 18, file);
+        
+        fread(_node.black_list, sizeof(char), 5, file);
 
         printf("+----------------------------------------------------------------------------+");
         printf("\n");
@@ -160,6 +224,10 @@ void View (Node _node)
         printf("|IP:%18s                                                       |", _node.node_ip);
         printf("\n");
         printf("|Regiao:%3d                                                                  |", _node.node_region);
+        printf("\n");
+        printf("+----------------------------------------------------------------------------+");
+        printf("\n");
+        printf("|BL: %s \t\t\t\t\t |", _node.black_list);
         printf("\n");
         printf("+----------------------------------------------------------------------------+");
         printf("\n");
@@ -233,6 +301,12 @@ int main(int argc, char *argv[])
 
                 return 1;
         }
-        return 0;
+        else if(argc ==4){
+                strcpy(_node.node_file, argv[1]);
+                Transform(_node);
+                View (_node);
 
+                return 1;
+        }
+        return 0;
 }

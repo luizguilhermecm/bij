@@ -26,6 +26,7 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
 {
         int i,j,count;
         char id_region[2];
+        char _black_list[5];
         static Node _package;
         Node _node;
         _package = *argp;     /* _package recebe o conteúdo do ponteiro passado por parâmetro
@@ -33,33 +34,17 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                                *  e o mesmo deverá ser atualizado caso algum nó adjacente for desconectado
                                *  ou uma nova rota for descoberta ou uma rota de menor custo for encontrada. */
         
+
+
         _node = Read(_package.send_file_name);
-        if (strcmp(_node.send_file_name, "NULL") == 0){
-             strcpy(_package.send_file_name, _node.send_file_name);
-             return (&_package);
+        FILE * check_server_file = fopen(_package.send_file_name, "r");
+        if (check_server_file == NULL){
+                return NULL;
         }
-/*
-        i = 0;
-        while (i < MAX){
-                if(strcmp(_node._table[i].destiny_id, "0") != 0){
-                        int tempo_atual = time(NULL);
-                        if(tempo_atual - _node._table[i].last_update > 55){
-                                strcpy(_node._table[i].destiny, "0");
-                                strcpy(_node._table[i].destiny_id, "0");
-                                strcpy(_node._table[i].route_ip, "0");
-                                strcpy(_node._table[i].route_id, "0");
-                                _node._table[i].weight = 0;
-                                _node._table[i].region = 0;
-                                _node._table[i].last_update = 0;
-                                _node._table[i].time_out = 0;
-                        }
-                }
-                i++;
-        }
-        Write (_package.send_file_name, _node);
-        _node = Read(_package.send_file_name);
-*/
-        _node = Read(_package.send_file_name);
+        fclose(check_server_file);
+
+        
+//        _node = Read(_package.send_file_name);
         int now;
         for (j = 0; j < MAX; j++){
                 now = time(NULL);
@@ -73,8 +58,8 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                         _node._table[j].time_out = 0;
                 }
         }
-        Write(_package.send_file_name, _node);
-        _node = Read(_package.send_file_name);
+//        Write(_package.send_file_name, _node);
+//        _node = Read(_package.send_file_name);
 
         int int_region;
         //_node [j] -> minha tabela
@@ -87,18 +72,18 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                                         && strcmp(_node._table[j].route_ip, "0") != 0 ) //verifica se mesmo destino
                         {
 
-                                _node._table[j].last_update = time(NULL);
 
                                 int all_weight = _package._table[i].weight + WeightFor(_node, _package.node_id); //recebe o peso que tinha + distancia entre nos
                                 if (_node._table[j].weight > all_weight) //veririca se meu peso eh maior
                                 { 
+                                        _node._table[j].last_update = time(NULL);
                                         strcpy(_node._table[j].route_id, _package.node_id); // coloco nova rota sendo pelo proprio _package
                                         strcpy(_node._table[j].route_ip, _package.node_ip);
                                         _node._table[j].weight = all_weight;
 
                                 }
-                                Write (_package.send_file_name, _node);
-                                _node = Read(_package.send_file_name);
+//                                Write (_package.send_file_name, _node);
+//                                _node = Read(_package.send_file_name);
                                 break;
                         }
 
@@ -118,8 +103,8 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                                 else if (strcmp(_node._table[j].destiny_id, _package.node_id) == 0)
                                 {
                                         _node._table[j].last_update = time(NULL); 
-                                         Write (_package.send_file_name, _node);
-                                        _node = Read(_package.send_file_name);
+ //                                        Write (_package.send_file_name, _node);
+ //                                       _node = Read(_package.send_file_name);
                                 }
                                 else if (strcmp(_node._table[j].destiny_id, "0") == 0)    //procura por uma linha nula na tabela
                                 {
@@ -135,12 +120,12 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                                         _node._table[j].last_update = time(NULL);
 
 
-                                        Write (_package.send_file_name, _node);
-                                        _node = Read(_package.send_file_name);
+//                                        Write (_package.send_file_name, _node);
+//                                        _node = Read(_package.send_file_name);
 
                                         break;
                                 }
-                               else 
+                                else 
                                 {       // nao pode entrar nesse else, se entrou esta errado
                                         //strcpy(_node._table[j].destiny, "ERRO_ELSE");
                                         // atualizar tempo de linhas onde nao se faz nada
@@ -148,11 +133,12 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                         } // end if de pertinencia
                         else if (strcmp(_package.node_id, _node._table[j].destiny_id) == 0){
                                _node._table[j].last_update = time(NULL); 
-                               Write (_package.send_file_name, _node);
-                               _node = Read(_package.send_file_name);
+//                               Write (_package.send_file_name, _node);
+//                               _node = Read(_package.send_file_name);
                       }
                 }
         }
+        Write (_package.send_file_name, _node);
         return (&_package);
 }
 
@@ -183,6 +169,8 @@ Node Read (char file_name[]){
         fread( _node.node_ip,        sizeof(char), 16, file);
         fread(&_node.node_region,    sizeof(int),   1, file);
         fread( _node.send_file_name, sizeof(char), 18, file);
+
+        fread(_node.black_list, sizeof(char), 5, file);
 
         while (i < MAX){
 
@@ -225,8 +213,10 @@ Node Print (char file_name[]){
         fread(&_node.node_region,    sizeof(int),   1, file);
         fread( _node.send_file_name, sizeof(char), 18, file);
 
+        fread(_node.black_list, sizeof(char), 5, file);
+
         printf("\n\n ( Read() Server ) Function Call Number: %d\n\n", test_Clock);
-        
+ 
         printf("+----------------------------------------------------------------------------+");
         printf("\n");
         printf("|File:%18s                                                     |", _node.node_file);
@@ -239,12 +229,17 @@ Node Print (char file_name[]){
         printf("\n");
         printf("+----------------------------------------------------------------------------+");
         printf("\n");
+        printf("|BL: %s \t\t\t\t\t |", _node.black_list);
+        printf("\n");
+        printf("+----------------------------------------------------------------------------+");
+        printf("\n");
         printf("+---+------------------+----+------------------+---+---+---+------------+----+");
         printf("\n");
         printf("|n  |IP Destino        |IDD | IP da Rota       |IDR|Pes|Reg|Last        |Out |");
         printf("\n");
         printf("+---+------------------+----+------------------+---+---+---+------------+----+");
         printf("\n");
+
 
         while (i < MAX){
 
@@ -303,6 +298,9 @@ void Write (char file_name[], Node _node)
         fwrite(_node.node_ip,        sizeof(char), 16, file);
         fwrite(&_node.node_region,   sizeof(int),   1, file);
         fwrite(_node.send_file_name, sizeof(char), 18, file);
+ 
+        strcpy(_node.black_list, "bij");
+        fwrite(_node.black_list, sizeof(char), 5, file);
  
         while (i < MAX){
                 

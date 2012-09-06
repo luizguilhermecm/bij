@@ -25,20 +25,21 @@ void Erro ();
 **             E o Node com as informações que serão 
 **             enviadas para o servidor REMOTO
 */
-Node Router(CLIENT *clnt, Node _arg)
+int Router(CLIENT *clnt, Node _arg)
 {
         Node _package;     /* Objeto do tipo Node que será enviado como parâmetro no router_l ( Método remoto ) */
         Node * _result;    /* Receive the return of server */
         _package = _arg;   /* Copia o argumento para a variável _package que será passada para a função remota */
         
         _result = router_1 (&_package,clnt);  /* Efetua a chamada da função remota */
-        
+
         if (_result == NULL)
         {
-                printf ("Problemas ao chamar a função remota\n");
-                exit(EXIT_FAILURE);
+                printf ("\tFile %s don't exist in server\n", _package.send_file_name);
+                //Server exists but file not exists
+                return 0;
         }
-        return *_result;
+        return 1;
 }
 
 int main( int argc, char *argv[])
@@ -48,7 +49,10 @@ int main( int argc, char *argv[])
         Node _arg;          /* Armazenará o conteúdo do arquivo do servidor local             */
         Node _erro;
         int i,j,count;
-        char id_region[2];
+        int check_server_file;
+        char id_region[3];
+        char _black_list[5];
+
         
         char send_file_name[17];      /* Nome do arquivo que será aberto no SERVIDOR REMOTO */
         char file_name [17];          /* Nome do arquivo LOCAL                              */
@@ -66,6 +70,7 @@ int main( int argc, char *argv[])
                 
                 Write(file_name, _arg);
                 _arg = Read(file_name);
+
                 /* Se o Adjacente tiver a região diferente do Arquivo LOCAL e o mesmo não é uma Região entra no IF  */
                 if(_arg.node_region != _arg._table[i].region && _arg._table[i].region != 99){
                         id_region[0] = 'r';
@@ -124,6 +129,7 @@ int main( int argc, char *argv[])
                 i++;
         }
 
+        //seta 1 nos adjacentes nativos
         for (j = 0; j < MAX; j++){
                 if (strcmp(_arg._table[j].destiny_id, "0") != 0
                                 && _arg._table[j].region != 99){
@@ -137,33 +143,43 @@ int main( int argc, char *argv[])
         i = 0;
         clock_t temp;
         while (1){
-                temp = clock() + CLOCKS_PER_SEC * 5;
+                temp = clock() + CLOCKS_PER_SEC * 2;
                 while (clock() < temp){}
                 _arg = Read(file_name);
-                while (strcmp(_arg._table[i].destiny_id, "0") != 0
-                                && _arg._table[i].region != 99 
-                                && _arg._table[i].time_out == 1){
 
-                        
-                        strcpy (send_file_name, _arg._table[i].destiny_id);
-                        strcat (send_file_name, _arg._table[i].destiny);
+                for (i = 0; i < MAX; i++){
+                        if (_arg._table[i].time_out == 1){
+                                strcpy (send_file_name, _arg._table[i].destiny_id);
+                                strcat (send_file_name, _arg._table[i].destiny);
 
-                        strcpy (_arg.send_file_name, send_file_name);
+                                strcpy (_arg.send_file_name, send_file_name);
 
-                        printf("Sending table to %s\n", send_file_name);
-                        // Primeiro parâmetro é o IP do Destino
-                        _adjacent = clnt_create (_arg._table[i].destiny, BIJ_PROG, BIJ_VERSION, "udp"); 
+                                printf("BL: %s\n", _arg.black_list);
 
+                                printf("Sending table to %s\n", send_file_name);
+                                // Primeiro parâmetro é o IP do Destino
+                                _adjacent = clnt_create (_arg._table[i].destiny, BIJ_PROG, BIJ_VERSION, "udp"); 
 
-                        _erro = Router (_adjacent, _arg); /* Envia a tabela para o adjacente conforme a variável i */
-                        if (strcmp(_erro.send_file_name, "NULL") == 0){
-                                printf("Arquivo não existe no server");
-                                exit(EXIT_FAILURE);
-                                //TODO: what we gonna do here?
+                                /* verifica se a referência foi criada */
+                                if (_adjacent == (CLIENT *) NULL)
+                                {
+                                        printf("\tThe server in %s is not accessible\n", _arg._table[i].destiny);
+
+//                                        _arg._table[i].time_out = 88;
+//                                        Write(file_name, _arg);
+                                        //server don't is acessible
+                                }
+                                else{
+                                        check_server_file = Router (_adjacent, _arg); /* Envia a tabela para o adjacente conforme a variável i */
+                                        if (check_server_file == 0){
+//                                                _arg._table[i].time_out = 88;
+//                                                Write(file_name, _arg);
+                                        }
+                                }
                         }
-                        i++;
+//                       i++;
                 }
-                i = 0;
+//                i = 0;
         }
 //        _arg = Read(file_name, _arg)) // Read my file;
 
@@ -171,7 +187,7 @@ int main( int argc, char *argv[])
 //        clnt = clnt_create (argv[1], BIJ_PROG, BIJ_VERSION, "udp");
         /* verifica se a referência foi criada */
 //        if (clnt == (CLIENT *) NULL)
-//        {
+//       {
 //                clnt_pcreateerror (argv[1]);
 //                return 0;
 //        }
@@ -205,7 +221,9 @@ Node Print (char file_name[]){
         fread( _node.node_ip,        sizeof(char), 16, file);
         fread(&_node.node_region,    sizeof(int),   1, file);
         fread( _node.send_file_name, sizeof(char), 18, file);
-
+        
+        fread(_node.black_list, sizeof(char), 5, file);
+ 
         printf("+----------------------------------------------------------------------------+");
         printf("\n");
         printf("|File:%18s                                                     |", _node.node_file);
@@ -215,6 +233,10 @@ Node Print (char file_name[]){
         printf("|IP:%18s                                                       |", _node.node_ip);
         printf("\n");
         printf("|Regiao:%3d                                                                  |", _node.node_region);
+        printf("\n");
+        printf("+----------------------------------------------------------------------------+");
+        printf("\n");
+        printf("|BL: %s \t\t\t\t\t |", _node.black_list);
         printf("\n");
         printf("+----------------------------------------------------------------------------+");
         printf("\n");
@@ -281,7 +303,10 @@ Node Read (char file_name[]){
         fread( _node.node_ip,        sizeof(char), 16, file);
         fread(&_node.node_region,    sizeof(int),   1, file);
         fread( _node.send_file_name, sizeof(char), 18, file);
-
+        
+        fread(_node.black_list, sizeof(char), 5, file);
+        
+ 
         while (i < MAX){
 
                 fread( _node._table[i].destiny,     sizeof(char), 16, file);
@@ -323,6 +348,9 @@ void Write (char file_name[], Node _node)
         fwrite(_node.node_ip,        sizeof(char), 16, file);
         fwrite(&_node.node_region,   sizeof(int),   1, file);
         fwrite(_node.send_file_name, sizeof(char), 18, file);
+         
+        strcpy(_node.black_list, "bij");
+        fwrite(_node.black_list, sizeof(char), 5, file);
  
         while (i < MAX){
                 fwrite(_node._table[i].destiny,      sizeof(char), 16, file);
