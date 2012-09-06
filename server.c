@@ -83,35 +83,42 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
         { // percorre a tabela recebida
                 for (j = 0; j < MAX; j++){ //percorre minha tabela
 
-                        if (_package._table[i].region == _node.node_region         // entra apenas se mesma regiao ou rota de regiao 
+                        if (strcmp(_node._table[j].destiny_id, _package._table[i].destiny_id) == 0) //verifica se mesmo destino
+                        {
+
+                                _node._table[j].last_update = time(NULL);
+
+                                int all_weight = _package._table[i].weight + WeightFor(_node, _package.node_id); //recebe o peso que tinha + distancia entre nos
+                                if (_node._table[j].weight > all_weight) //veririca se meu peso eh maior
+                                { 
+                                        strcpy(_node._table[j].route_id, _package.node_id); // coloco nova rota sendo pelo proprio _package
+                                        strcpy(_node._table[j].route_ip, _package.node_ip);
+                                        _node._table[j].weight = all_weight;
+
+                                }
+                                Write (_package.send_file_name, _node);
+                                _node = Read(_package.send_file_name);
+                                break;
+                        }
+
+                        else if (_package._table[i].region == _node.node_region         // entra apenas se mesma regiao ou rota de regiao 
                                 || _package._table[i].region == 99)
                         {                                                          //ou seja, elimina inuteis
                                 int_region = atoi(&_package._table[j].destiny_id[1]);
 
-                                if (strcmp(_node._table[j].destiny_id, _package._table[i].destiny_id) == 0) //verifica se mesmo destino
-                                {
-                                        
-                                        _node._table[j].last_update = time(NULL);
-                                        
-                                        int all_weight = _package._table[i].weight + WeightFor(_node, _package.node_id); //recebe o peso que tinha + distancia entre nos
-                                        if (_node._table[j].weight > all_weight) //veririca se meu peso eh maior
-                                        { 
-                                                strcpy(_node._table[j].route_id, _package.node_id); // coloco nova rota sendo pelo proprio _package
-                                                strcpy(_node._table[j].route_ip, _package.node_ip);
-                                                _node._table[j].weight = all_weight;
-
-                                        }
-                                        Write (_package.send_file_name, _node);
-                                        _node = Read(_package.send_file_name);
-                                        break;
-                                }
-                                else if (int_region == _node.node_region)
+                                if (int_region == _node.node_region)
                                 {
                                         break;
                                 }
                                 else if (strcmp(_node.node_id, _package._table[i].destiny_id) == 0)
                                 {
                                         // do nothing :)
+                                }
+                                else if (strcmp(_node._table[j].destiny_id, _package.node_id) == 0)
+                                {
+                                        _node._table[j].last_update = time(NULL); 
+                                         Write (_package.send_file_name, _node);
+                                        _node = Read(_package.send_file_name);
                                 }
                                 else if (strcmp(_node._table[j].destiny_id, "0") == 0)    //procura por uma linha nula na tabela
                                 {
@@ -122,7 +129,7 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                                         _node._table[j].weight = _package._table[i].weight + WeightFor(_node, _package.node_id);
                                         _node._table[j].region = _package._table[i].region;
 
-                                        _package._table[i].time_out = 0; //FIX: acredito que seja _node, trocar depois de um commit final
+                                        _node._table[j].time_out = 0; //FIX: acredito que seja _node, trocar depois de um commit final
 
                                         _node._table[j].last_update = time(NULL);
 
@@ -132,13 +139,7 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
 
                                         break;
                                 }
-                                else if (strcmp(_node._table[j].destiny_id, _package.node_id) == 0)
-                                {
-                                        _node._table[j].last_update = time(NULL); 
-                                         Write (_package.send_file_name, _node);
-                                        _node = Read(_package.send_file_name);
-                               }
-                                else 
+                               else 
                                 {       // nao pode entrar nesse else, se entrou esta errado
                                         //strcpy(_node._table[j].destiny, "ERRO_ELSE");
                                         // atualizar tempo de linhas onde nao se faz nada
