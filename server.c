@@ -83,7 +83,8 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
         { // percorre a tabela recebida
                 for (j = 0; j < MAX; j++){ //percorre minha tabela
 
-                        if (strcmp(_node._table[j].destiny_id, _package._table[i].destiny_id) == 0) //verifica se mesmo destino
+                        if (strcmp(_node._table[j].destiny_id, _package._table[i].destiny_id) == 0
+                                        && strcmp(_node._table[j].route_ip, "0") != 0 ) //verifica se mesmo destino
                         {
 
                                 _node._table[j].last_update = time(NULL);
@@ -104,7 +105,7 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                         else if (_package._table[i].region == _node.node_region         // entra apenas se mesma regiao ou rota de regiao 
                                 || _package._table[i].region == 99)
                         {                                                          //ou seja, elimina inuteis
-                                int_region = atoi(&_package._table[j].destiny_id[1]);
+                                int_region = atoi(&_package._table[i].destiny_id[1]);
 
                                 if (int_region == _node.node_region)
                                 {
