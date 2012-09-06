@@ -169,6 +169,7 @@ int main( int argc, char *argv[])
                                         printf("\tThe server in %s is not accessible\n", _arg._table[i].destiny);
 
                                         _arg._table[i].time_out = 77;
+                                        strcpy(_arg.black_list, _arg._table[i].destiny_id);
                                         Write(file_name, _arg);
                                         //server don't is acessible
                                 }

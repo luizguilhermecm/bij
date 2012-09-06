@@ -17,6 +17,7 @@ Node Read (char file_name[]);
 Node Print (char file_name[]);
 void Write (char file_name[], Node _node);
 int WeightFor (Node _node, char id[]);
+int getLast(Node _node);
 
 /* Variáveis Globais */
 int test_Clock = 0;
@@ -73,14 +74,20 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
 
                 strcpy(_node.black_list, _package.black_list);
                 _node.delete_count++;
-                if(_node.delete_count > 3){ 
+                if(_node.delete_count > 4){ 
                         _node.ibackup++;
                         _node.delete_count = 0;
                 }
                 for (j = 0; j < MAX; j++)
                 {
-                        if(strcmp(_node._table[j].destiny_id, _node.black_list) == 0) _node._table[j] = _node._table[18];              
-                        else if(strcmp(_node._table[j].route_id, _node.black_list) == 0) _node._table[j] = _node._table[18];              
+                        if(strcmp(_node._table[j].destiny_id, _node.black_list) == 0){
+                                _node._table[j] = _node._table[getLast(_node)];                                     
+                                _node._table[getLast(_node)] = _node._table[18];                                     
+                        }
+                        else if(strcmp(_node._table[j].route_id, _node.black_list) == 0){
+                                 _node._table[j] = _node._table[getLast(_node)];                                     
+                                _node._table[getLast(_node)] = _node._table[18];                                     
+                        }
                 
                 }
                 Write(_package.send_file_name, _node);
@@ -179,6 +186,15 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
         return (&_package);
 }
 
+int getLast(Node _node)
+{
+        int j;
+        for(j = 0; j < MAX; j++){
+                if(_node._table[j+1].last_update == 0){
+                        return j;
+                }
+        }
+}
 int WeightFor (Node _node, char id[]){
         int j;
         for (j = 0; j < MAX; j++){
