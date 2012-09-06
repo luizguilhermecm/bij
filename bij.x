@@ -23,6 +23,9 @@ struct Node
         int    node_region;
         char   send_file_name[18];
         char   black_list[5];
+        int   ibackup;
+        int   delete_count;
+        char  cbackup[5];
         struct Adjacent _table[MAX]; 
 };
 

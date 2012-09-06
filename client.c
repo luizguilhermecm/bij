@@ -143,18 +143,21 @@ int main( int argc, char *argv[])
         i = 0;
         clock_t temp;
         while (1){
-                temp = clock() + CLOCKS_PER_SEC * 2;
-                while (clock() < temp){}
                 _arg = Read(file_name);
+                if (_arg.delete_count < 2)
+                temp = clock() + CLOCKS_PER_SEC * 4;
+                else 
+                temp = clock() + CLOCKS_PER_SEC * 2;
+
+                while (clock() < temp){}
 
                 for (i = 0; i < MAX; i++){
                         if (_arg._table[i].time_out == 1){
+
                                 strcpy (send_file_name, _arg._table[i].destiny_id);
                                 strcat (send_file_name, _arg._table[i].destiny);
 
                                 strcpy (_arg.send_file_name, send_file_name);
-
-                                printf("BL: %s\n", _arg.black_list);
 
                                 printf("Sending table to %s\n", send_file_name);
                                 // Primeiro parâmetro é o IP do Destino
@@ -165,15 +168,17 @@ int main( int argc, char *argv[])
                                 {
                                         printf("\tThe server in %s is not accessible\n", _arg._table[i].destiny);
 
-//                                        _arg._table[i].time_out = 88;
-//                                        Write(file_name, _arg);
+                                        _arg._table[i].time_out = 77;
+                                        Write(file_name, _arg);
                                         //server don't is acessible
                                 }
                                 else{
+                                        check_server_file = 1;
                                         check_server_file = Router (_adjacent, _arg); /* Envia a tabela para o adjacente conforme a variável i */
                                         if (check_server_file == 0){
-//                                                _arg._table[i].time_out = 88;
-//                                                Write(file_name, _arg);
+                                                _arg._table[i].time_out = 88;
+                                                strcpy(_arg.black_list, _arg._table[i].destiny_id);
+                                                Write(file_name, _arg);
                                         }
                                 }
                         }
@@ -221,9 +226,13 @@ Node Print (char file_name[]){
         fread( _node.node_ip,        sizeof(char), 16, file);
         fread(&_node.node_region,    sizeof(int),   1, file);
         fread( _node.send_file_name, sizeof(char), 18, file);
-        
+         
+        fread(&_node.delete_count,   sizeof(int),   1, file);
+        fread(&_node.ibackup,   sizeof(int),   1, file);
+        fread(_node.cbackup, sizeof(char), 5, file);
+      
         fread(_node.black_list, sizeof(char), 5, file);
- 
+
         printf("+----------------------------------------------------------------------------+");
         printf("\n");
         printf("|File:%18s                                                     |", _node.node_file);
@@ -236,7 +245,11 @@ Node Print (char file_name[]){
         printf("\n");
         printf("+----------------------------------------------------------------------------+");
         printf("\n");
-        printf("|BL: %s \t\t\t\t\t |", _node.black_list);
+        printf("|BL: %s \t\t\t Count: %3d\t\t |", _node.black_list, _node.delete_count);
+        printf("\n");
+        printf("+----------------------------------------------------------------------------+");
+        printf("\n");
+        printf("|iBackup: %5d \t\t cBackup: %5s \t\t\t", _node.ibackup, _node.cbackup);
         printf("\n");
         printf("+----------------------------------------------------------------------------+");
         printf("\n");
@@ -303,6 +316,10 @@ Node Read (char file_name[]){
         fread( _node.node_ip,        sizeof(char), 16, file);
         fread(&_node.node_region,    sizeof(int),   1, file);
         fread( _node.send_file_name, sizeof(char), 18, file);
+          
+        fread(&_node.delete_count,   sizeof(int),   1, file);
+        fread(&_node.ibackup,   sizeof(int),   1, file);
+        fread(_node.cbackup, sizeof(char), 5, file);
         
         fread(_node.black_list, sizeof(char), 5, file);
         
@@ -348,8 +365,11 @@ void Write (char file_name[], Node _node)
         fwrite(_node.node_ip,        sizeof(char), 16, file);
         fwrite(&_node.node_region,   sizeof(int),   1, file);
         fwrite(_node.send_file_name, sizeof(char), 18, file);
-         
-        strcpy(_node.black_list, "bij");
+ 
+        fwrite(&_node.delete_count,   sizeof(int),   1, file);
+        fwrite(&_node.ibackup,   sizeof(int),   1, file);
+        fwrite(_node.cbackup, sizeof(char), 5, file);
+        
         fwrite(_node.black_list, sizeof(char), 5, file);
  
         while (i < MAX){

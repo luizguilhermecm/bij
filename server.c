@@ -25,9 +25,10 @@ int test_Clock = 0;
 Node * router_1_svc (Node * argp, struct svc_req *rqstp)
 {
         int i,j,count;
-        char id_region[2];
+        char id_region[3];
         char _black_list[5];
         static Node _package;
+        static int delete_count;
         Node _node;
         _package = *argp;     /* _package recebe o conteúdo do ponteiro passado por parâmetro
                                *  contendo o arquivo que deverá ser comparado com o arquivo LOCAL
@@ -36,30 +37,58 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
         
 
 
-        _node = Read(_package.send_file_name);
-        FILE * check_server_file = fopen(_package.send_file_name, "r");
-        if (check_server_file == NULL){
+        FILE * server_file = fopen(_package.send_file_name, "r");
+        if (server_file == NULL){
                 return NULL;
         }
-        fclose(check_server_file);
+        fclose(server_file);
 
         
-//        _node = Read(_package.send_file_name);
-        int now;
-        for (j = 0; j < MAX; j++){
-                now = time(NULL);
-                if (now - _node._table[j].last_update > 100){
-                        strcpy(_node._table[j].destiny_id, "0");
-                        strcpy(_node._table[j].destiny, "0");
-                        strcpy(_node._table[j].route_id, "0");
-                        strcpy(_node._table[j].route_ip, "0");
-                        _node._table[j].weight = 0;
-                        _node._table[j].region = 0;
-                        _node._table[j].time_out = 0;
-                }
+        _node = Read(_package.send_file_name);
+//        int now;
+//        for (j = 0; j < MAX; j++){
+//                now = time(NULL);
+//                if (now - _node._table[j].last_update > 100){
+//                        strcpy(_node._table[j].destiny_id, "0");
+//                        strcpy(_node._table[j].destiny, "0");
+//                        strcpy(_node._table[j].route_id, "0");
+//                        strcpy(_node._table[j].route_ip, "0");
+//                        _node._table[j].weight = 0;
+//                        _node._table[j].region = 0;
+//                        _node._table[j].time_out = 0;
+//                }
+//        }
+
+        if(_node.ibackup == 1){
+                strcpy(_node.black_list, "bij");
+                _node.ibackup = 0;
+                _node.delete_count = 0;
+
+                Write(_package.send_file_name, _node);
+                return (&_package);
+                
         }
-//        Write(_package.send_file_name, _node);
-//        _node = Read(_package.send_file_name);
+        else if(strcmp(_package.black_list, "bij") != 0
+                        && (_package.ibackup == 0 || _package.ibackup == 2)){
+
+                strcpy(_node.black_list, _package.black_list);
+                _node.delete_count++;
+                if(_node.delete_count > 3){ 
+                        _node.ibackup++;
+                        _node.delete_count = 0;
+                }
+                for (j = 0; j < MAX; j++)
+                {
+                        if(strcmp(_node._table[j].destiny_id, _node.black_list) == 0) _node._table[j] = _node._table[18];              
+                        else if(strcmp(_node._table[j].route_id, _node.black_list) == 0) _node._table[j] = _node._table[18];              
+                
+                }
+                Write(_package.send_file_name, _node);
+                return (&_package);
+        }
+
+        Write(_package.send_file_name, _node);
+        _node = Read(_package.send_file_name);
 
         int int_region;
         //_node [j] -> minha tabela
@@ -68,7 +97,15 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
         { // percorre a tabela recebida
                 for (j = 0; j < MAX; j++){ //percorre minha tabela
 
-                        if (strcmp(_node._table[j].destiny_id, _package._table[i].destiny_id) == 0
+                        if (_package._table[i].time_out == 88 || _package._table[i].time_out == 77){
+
+                        }
+
+                        else if (_node._table[j].time_out == 88 || _node._table[j].time_out == 77){
+                        
+                        }
+
+                        else if (strcmp(_node._table[j].destiny_id, _package._table[i].destiny_id) == 0
                                         && strcmp(_node._table[j].route_ip, "0") != 0 ) //verifica se mesmo destino
                         {
 
@@ -132,7 +169,7 @@ Node * router_1_svc (Node * argp, struct svc_req *rqstp)
                                 }
                         } // end if de pertinencia
                         else if (strcmp(_package.node_id, _node._table[j].destiny_id) == 0){
-                               _node._table[j].last_update = time(NULL); 
+//                               _node._table[j].last_update = time(NULL); 
 //                               Write (_package.send_file_name, _node);
 //                               _node = Read(_package.send_file_name);
                       }
@@ -151,8 +188,7 @@ int WeightFor (Node _node, char id[]){
         }
         return 99;
 }
-
-Node Read (char file_name[]){
+Node Print (char file_name[]){
 
         Node _node;
         int i = 0;
@@ -169,54 +205,13 @@ Node Read (char file_name[]){
         fread( _node.node_ip,        sizeof(char), 16, file);
         fread(&_node.node_region,    sizeof(int),   1, file);
         fread( _node.send_file_name, sizeof(char), 18, file);
-
+         
+        fread(&_node.delete_count,   sizeof(int),   1, file);
+        fread(&_node.ibackup,   sizeof(int),   1, file);
+        fread(_node.cbackup, sizeof(char), 5, file);
+      
         fread(_node.black_list, sizeof(char), 5, file);
 
-        while (i < MAX){
-
-                fread( _node._table[i].destiny,     sizeof(char), 16, file);
-                fread( _node._table[i].destiny_id,  sizeof(char),  5, file);
-                fread( _node._table[i].route_ip,    sizeof(char), 16, file);
-                fread( _node._table[i].route_id,    sizeof(char),  3, file);
-                fread(&_node._table[i].weight,      sizeof(int),   1, file);
-                fread(&_node._table[i].region,      sizeof(int),   1, file);
-                fread(&_node._table[i].last_update, sizeof(int),   1, file);
-                fread(&_node._table[i].time_out,    sizeof(int),   1, file);
-
-               i++;
-        }
-
-        fclose(file);
-        return _node;
-}
-/*
-**  Funçãoó quer o negocio funcionando nao precisa deletar...
-Read
-**  Descrição: Recebe como parâmetro o nome do arquivo que deverá ser lido ( Arquivo LOCAL )
-**             E o Nó que armazenará as informações lidas pela função e depois será retornado.     
-*/
-Node Print (char file_name[]){
-
-        Node _node;
-        int i = 0;
-
-        FILE *file = fopen(file_name, "r");
-
-        if (file == NULL) {
-                strcpy(_node.send_file_name, "NULL");
-                return _node;
-        }
-
-        fread( _node.node_file,      sizeof(char), 18, file);
-        fread( _node.node_id,        sizeof(char),  3, file);
-        fread( _node.node_ip,        sizeof(char), 16, file);
-        fread(&_node.node_region,    sizeof(int),   1, file);
-        fread( _node.send_file_name, sizeof(char), 18, file);
-
-        fread(_node.black_list, sizeof(char), 5, file);
-
-        printf("\n\n ( Read() Server ) Function Call Number: %d\n\n", test_Clock);
- 
         printf("+----------------------------------------------------------------------------+");
         printf("\n");
         printf("|File:%18s                                                     |", _node.node_file);
@@ -229,7 +224,11 @@ Node Print (char file_name[]){
         printf("\n");
         printf("+----------------------------------------------------------------------------+");
         printf("\n");
-        printf("|BL: %s \t\t\t\t\t |", _node.black_list);
+        printf("|BL: %s \t\t\t Count: %3d\t\t |", _node.black_list, _node.delete_count);
+        printf("\n");
+        printf("+----------------------------------------------------------------------------+");
+        printf("\n");
+        printf("|iBackup: %5d \t\t cBackup: %5s \t\t\t", _node.ibackup, _node.cbackup);
         printf("\n");
         printf("+----------------------------------------------------------------------------+");
         printf("\n");
@@ -239,7 +238,6 @@ Node Print (char file_name[]){
         printf("\n");
         printf("+---+------------------+----+------------------+---+---+---+------------+----+");
         printf("\n");
-
 
         while (i < MAX){
 
@@ -271,9 +269,55 @@ Node Print (char file_name[]){
         printf("\n");
 
         fclose(file);
+        return _node;
+}
 
-        test_Clock++;
+
+/*
+**  Função: Read
+**  Descrição: Recebe como parâmetro o nome do arquivo que deverá ser lido ( Arquivo LOCAL )
+**             E o Nó que armazenará as informações lidas pela função e depois será retornado.     
+*/
+Node Read (char file_name[]){
+
+        Node _node;
+        int i = 0;
+
+        FILE *file = fopen(file_name, "r");
         
+        if (file == NULL) {
+                printf("\nArquivo não encontrado\n");
+                exit(EXIT_FAILURE);
+        }
+
+        fread( _node.node_file,      sizeof(char), 18, file);
+        fread( _node.node_id,        sizeof(char),  3, file);
+        fread( _node.node_ip,        sizeof(char), 16, file);
+        fread(&_node.node_region,    sizeof(int),   1, file);
+        fread( _node.send_file_name, sizeof(char), 18, file);
+          
+        fread(&_node.delete_count,   sizeof(int),   1, file);
+        fread(&_node.ibackup,   sizeof(int),   1, file);
+        fread(_node.cbackup, sizeof(char), 5, file);
+        
+        fread(_node.black_list, sizeof(char), 5, file);
+        
+ 
+        while (i < MAX){
+
+                fread( _node._table[i].destiny,     sizeof(char), 16, file);
+                fread( _node._table[i].destiny_id,  sizeof(char),  5, file);
+                fread( _node._table[i].route_ip,    sizeof(char), 16, file);
+                fread( _node._table[i].route_id,    sizeof(char),  3, file);
+                fread(&_node._table[i].weight,      sizeof(int),   1, file);
+                fread(&_node._table[i].region,      sizeof(int),   1, file);
+                fread(&_node._table[i].last_update, sizeof(int),   1, file);
+                fread(&_node._table[i].time_out,    sizeof(int),   1, file);
+
+               i++;
+        }
+
+        fclose(file);
         return _node;
 }
 
@@ -288,10 +332,12 @@ void Write (char file_name[], Node _node)
         int i = 0;                    /* Variável de controle p/ o n. de entradas não exceder o tamanho Máximo da _table[MAX] */
         
         FILE *file = fopen(file_name, "w");       /* Abre o arquivo com permissão w
-                                                           Abrir um arquivo texto para gravação. 
-                                                           Se o arquivo não existir, ele será criado. 
-                                                           Se já existir, o conteúdo anterior será destruído. */
-
+                                                     Abrir um arquivo texto para gravação. 
+                                                     Se o arquivo não existir, ele será criado. 
+                                                     Se já existir, o conteúdo anterior será destruído. */
+        if (file == NULL) {
+                return;
+        }                                                           
         /* Escreve as informações do nó. Nome do arquivo, id, IP e a região a qual ele pertence */
         fwrite(_node.node_file,      sizeof(char), 18, file);
         fwrite(_node.node_id,        sizeof(char),  3, file);
@@ -299,11 +345,13 @@ void Write (char file_name[], Node _node)
         fwrite(&_node.node_region,   sizeof(int),   1, file);
         fwrite(_node.send_file_name, sizeof(char), 18, file);
  
-        strcpy(_node.black_list, "bij");
+        fwrite(&_node.delete_count,   sizeof(int),   1, file);
+        fwrite(&_node.ibackup,   sizeof(int),   1, file);
+        fwrite(_node.cbackup, sizeof(char), 5, file);
+        
         fwrite(_node.black_list, sizeof(char), 5, file);
  
         while (i < MAX){
-                
                 fwrite(_node._table[i].destiny,      sizeof(char), 16, file);
                 fwrite( _node._table[i].destiny_id,  sizeof(char),  5, file);
                 fwrite( _node._table[i].route_ip,    sizeof(char), 16, file);

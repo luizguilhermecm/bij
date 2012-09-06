@@ -40,6 +40,9 @@ typedef struct Node
         int    node_region;           /* Terá a região do no a qual ele pertence                           */
         char   send_file_name[18];    /* Conterá o IP do Nó Ex.: 192.90.30.211                             */
         char   black_list[5];
+        int    delete_count;
+        char   cbackup[5];
+        int    ibackup;
         struct Adjacent _table[MAX];  /* Vetor de estruturas do tipo Adjacent contendo os adjacentes do Nó */
 }Node;
 
@@ -81,10 +84,21 @@ void Transform (Node _node)
         fwrite(_node.node_ip,        sizeof(char), 16, file);
         fwrite(&_node.node_region,   sizeof(int),   1, file);
         fwrite(_node.send_file_name, sizeof(char), 18, file);
-         
+
+        _node.ibackup = 0;
+        _node.delete_count = 0;
+
+        fwrite(&_node.delete_count,   sizeof(int),   1, file);
+        fwrite(&_node.ibackup,   sizeof(int),   1, file);
+
+        strcpy(_node.cbackup, "bij");
+        fwrite(_node.cbackup, sizeof(char), 5, file);
+
+
         strcpy(_node.black_list, "bij");
         fwrite(_node.black_list, sizeof(char), 5, file);
  
+
         i = 0;
         while (i < MAX){
                 fwrite(_node._table[i].destiny,      sizeof(char), 16, file);
@@ -121,7 +135,17 @@ void Generator (Node _node)
         fwrite(_node.node_ip,        sizeof(char), 16, file);
         fwrite(&_node.node_region,   sizeof(int),   1, file);
         fwrite(_node.send_file_name, sizeof(char), 18, file);
-        
+
+        _node.ibackup = 0;
+        _node.delete_count = 0;
+
+        fwrite(&_node.delete_count,   sizeof(int),   1, file);
+        fwrite(&_node.ibackup,   sizeof(int),   1, file);
+
+        strcpy(_node.cbackup, "bij");
+        fwrite(_node.cbackup, sizeof(char), 5, file);
+
+
         strcpy(_node.black_list, "bij");
         fwrite(_node.black_list, sizeof(char), 5, file);
         
@@ -213,6 +237,11 @@ void View (Node _node)
         fread(&_node.node_region,    sizeof(int),   1, file);
         fread( _node.send_file_name, sizeof(char), 18, file);
         
+        fread(&_node.delete_count,   sizeof(int),   1, file);
+        fread(&_node.ibackup,   sizeof(int),   1, file);
+        fread(_node.cbackup, sizeof(char), 5, file);
+
+      
         fread(_node.black_list, sizeof(char), 5, file);
 
         printf("+----------------------------------------------------------------------------+");
@@ -227,7 +256,11 @@ void View (Node _node)
         printf("\n");
         printf("+----------------------------------------------------------------------------+");
         printf("\n");
-        printf("|BL: %s \t\t\t\t\t |", _node.black_list);
+        printf("|BL: %s \t\t\t Count: %3d\t\t |", _node.black_list, _node.delete_count);
+        printf("\n");
+        printf("+----------------------------------------------------------------------------+");
+        printf("\n");
+        printf("|iBackup: %5d \t\t cBackup: %5s \t\t\t", _node.ibackup, _node.cbackup);
         printf("\n");
         printf("+----------------------------------------------------------------------------+");
         printf("\n");
