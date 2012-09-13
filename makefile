@@ -1,3 +1,4 @@
+#makefile
 FILE = bij
 SERVER = server
 CLIENT = client
